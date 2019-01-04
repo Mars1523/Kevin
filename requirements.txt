@@ -1,0 +1,4 @@
+pyfrc
+wpilib
+
+marsutils ~= 0.2

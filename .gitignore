@@ -1,0 +1,13 @@
+*.py[codx]
+__pycache__/
+.pytest*/
+.coverage
+.mypy_cache/
+
+.deploy_cfg
+
+.vscode/
+.DS_Store
+
+# C extensions
+*.so
