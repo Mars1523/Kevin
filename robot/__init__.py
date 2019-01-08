@@ -33,8 +33,3 @@ class Kevin(magicbot.MagicRobot):
         """Prepare for autonomous mode"""
 
         magicbot.MagicRobot.autonomous(self)
-
-
-if __name__ == "__main__":
-    # Run robot
-    wpilib.run(Kevin)
