@@ -2,7 +2,7 @@ import magicbot
 import wpilib
 
 
-class Mars2019(magicbot.MagicRobot):
+class Kevin(magicbot.MagicRobot):
     # Magic components
     ...
 
@@ -37,4 +37,4 @@ class Mars2019(magicbot.MagicRobot):
 
 if __name__ == "__main__":
     # Run robot
-    wpilib.run(Mars2019)
+    wpilib.run(Kevin)
