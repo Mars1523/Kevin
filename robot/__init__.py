@@ -2,6 +2,7 @@ import magicbot
 import wpilib
 import wpilib.drive
 import rev
+import ctre
 from marsutils import with_ctrl_manager
 
 from .components import Drive
@@ -22,11 +23,17 @@ class Kevin(magicbot.MagicRobot):
         self.gamepad = wpilib.XboxController(0)
 
         # Drive motors
-        # TODO: Change these to CAN
-        self.fl_drive = rev.CANSparkMax(2, rev.MotorType.kBrushless)
-        self.fr_drive = rev.CANSparkMax(3, rev.MotorType.kBrushless)
-        self.rl_drive = rev.CANSparkMax(3, rev.MotorType.kBrushless)
-        self.rr_drive = rev.CANSparkMax(5, rev.MotorType.kBrushless)
+        # TODO: Remove this once spark max has hal
+        if self.isSimulation():
+            self.fl_drive = ctre.WPI_VictorSPX(2)
+            self.fr_drive = ctre.WPI_VictorSPX(3)
+            self.rl_drive = ctre.WPI_VictorSPX(4)
+            self.rr_drive = ctre.WPI_VictorSPX(5)
+        else:
+            self.fl_drive = rev.CANSparkMax(2, rev.MotorType.kBrushless)
+            self.fr_drive = rev.CANSparkMax(3, rev.MotorType.kBrushless)
+            self.rl_drive = rev.CANSparkMax(4, rev.MotorType.kBrushless)
+            self.rr_drive = rev.CANSparkMax(5, rev.MotorType.kBrushless)
 
         # left
         self.left_drive = wpilib.SpeedControllerGroup(self.fl_drive, self.rl_drive)
@@ -41,6 +48,10 @@ class Kevin(magicbot.MagicRobot):
             self.left_drive, self.right_drive
         )
 
+        # Pneumatics
+        self.octacanum_shifter = wpilib.DoubleSolenoid(0, 1)
+        # Default state is extended (mecanum)
+        self.octacanum_shifter.set(wpilib.DoubleSolenoid.Value.kForward)
         # Misc components
 
         # PDP for monitoring power usage

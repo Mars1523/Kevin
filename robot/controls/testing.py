@@ -3,7 +3,7 @@ import wpilib
 
 from wpilib.interfaces.generichid import GenericHID
 
-from .. import components
+from ..components.drive import DriveMode, Drive
 
 
 class Testing(marsutils.ControlInterface):
@@ -14,10 +14,24 @@ class Testing(marsutils.ControlInterface):
 
     gamepad: wpilib.XboxController
 
-    drive: components.Drive
+    drive: Drive
+
+    def __init__(self):
+        self.drive_mode = DriveMode.MECANUM
+        super().__init__()
 
     def teleopPeriodic(self):
-        self.drive.drive_tank(
-            self.gamepad.getY(GenericHID.Hand.kRight),
-            self.gamepad.getX(GenericHID.Hand.kLeft),
-        )
+        if self.gamepad.getRawButtonPressed(6):  # TODO: Change id
+            self.drive_mode = self.drive_mode.toggle()
+
+        if self.drive_mode == DriveMode.MECANUM:
+            self.drive.drive_mecanum(
+                self.gamepad.getX(GenericHID.Hand.kLeft),
+                -self.gamepad.getY(GenericHID.Hand.kLeft),
+                self.gamepad.getX(GenericHID.Hand.kRight),
+            )
+        else:
+            self.drive.drive_tank(
+                self.gamepad.getY(GenericHID.Hand.kRight),
+                self.gamepad.getX(GenericHID.Hand.kLeft),
+            )

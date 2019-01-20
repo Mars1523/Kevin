@@ -7,6 +7,12 @@ class DriveMode(Enum):
     MECANUM = auto()
     TANK = auto()
 
+    def toggle(self):
+        if self == self.MECANUM:
+            return self.TANK
+        else:
+            return self.MECANUM
+
 
 class Drive:
     """
@@ -17,6 +23,8 @@ class Drive:
 
     tank_drive: wpilib.drive.DifferentialDrive
     mecanum_drive: wpilib.drive.MecanumDrive
+
+    octacanum_shifter: wpilib.DoubleSolenoid
 
     # front_left_enc: CANTalonEncoder
     # front_right_enc: CANTalonEncoder
@@ -50,23 +58,29 @@ class Drive:
 
         self.drive_mode = DriveMode.TANK
 
+    def set_mode(self, mode: DriveMode):
+        self.drive_mode = mode
+
     def execute(self):
         # feed the other drive train to appease the motor safety
         if self.drive_mode == DriveMode.TANK:
+            self.octacanum_shifter.set(wpilib.DoubleSolenoid.Value.kForward)
             self.tank_drive.arcadeDrive(self.y, self.rotation)
             self.mecanum_drive.feed()
         elif self.drive_mode == DriveMode.MECANUM:
+            self.octacanum_shifter.set(wpilib.DoubleSolenoid.Value.kReverse)
             self.mecanum_drive.driveCartesian(self.y, self.x, self.rotation)
-            self.drive_tank.feed()
+            self.tank_drive.feed()
 
         self.x = 0
         self.y = 0
         self.rotation = 0
 
     def reset_encoders(self):
-        """ Reset all assosiated encoders
+        """ Reset all associated encoders
         """
-        self.front_left_enc.zero()
-        self.front_right_enc.zero()
-        self.rear_left_enc.zero()
-        self.rear_right_enc.zero()
+        pass
+        # self.front_left_enc.zero()
+        # self.front_right_enc.zero()
+        # self.rear_left_enc.zero()
+        # self.rear_right_enc.zero()
