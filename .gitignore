@@ -7,6 +7,7 @@ __pycache__/
 .deploy_cfg
 
 .vscode/
+.idea/
 .DS_Store
 
 # C extensions
