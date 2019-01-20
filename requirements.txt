@@ -1,4 +1,5 @@
 pyfrc
 wpilib
+robotpy-rev
 
 marsutils ~= 0.2

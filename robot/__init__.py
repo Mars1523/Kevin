@@ -1,5 +1,7 @@
 import magicbot
 import wpilib
+import wpilib.drive
+import rev
 from marsutils import with_ctrl_manager
 
 from .components import Drive
@@ -21,10 +23,10 @@ class Kevin(magicbot.MagicRobot):
 
         # Drive motors
         # TODO: Change these to CAN
-        self.fl_drive = wpilib.Spark(0)
-        self.fr_drive = wpilib.Spark(1)
-        self.rl_drive = wpilib.Spark(2)
-        self.rr_drive = wpilib.Spark(3)
+        self.fl_drive = rev.CANSparkMax(2, rev.MotorType.kBrushless)
+        self.fr_drive = rev.CANSparkMax(3, rev.MotorType.kBrushless)
+        self.rl_drive = rev.CANSparkMax(3, rev.MotorType.kBrushless)
+        self.rr_drive = rev.CANSparkMax(5, rev.MotorType.kBrushless)
 
         # left
         self.left_drive = wpilib.SpeedControllerGroup(self.fl_drive, self.rl_drive)
