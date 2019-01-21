@@ -24,12 +24,18 @@ class Kevin(magicbot.MagicRobot):
         self.gamepad = wpilib.XboxController(0)
 
         # Drive motors
-        # TODO: Remove this once spark max has hal
-        if self.isSimulation():
-            self.fl_drive = ctre.WPI_VictorSPX(2)
-            self.fr_drive = ctre.WPI_VictorSPX(3)
-            self.rl_drive = ctre.WPI_VictorSPX(4)
-            self.rr_drive = ctre.WPI_VictorSPX(5)
+        # Curisoity has talons, we can use it for testing
+        if wpilib.SmartDashboard.getBoolean("curiosity_compat", False):
+            self.fl_drive = ctre.WPI_TalonSRX(10)
+            self.fr_drive = ctre.WPI_TalonSRX(11)
+            self.rl_drive = ctre.WPI_TalonSRX(12)
+            self.rr_drive = ctre.WPI_TalonSRX(13)
+        # TODO: Spark max does not have sim support yet, use talons instead for now
+        elif self.isSimulation():
+            self.fl_drive = ctre.WPI_TalonSRX(2)
+            self.fr_drive = ctre.WPI_TalonSRX(3)
+            self.rl_drive = ctre.WPI_TalonSRX(4)
+            self.rr_drive = ctre.WPI_TalonSRX(5)
         else:
             self.fl_drive = rev.CANSparkMax(2, rev.MotorType.kBrushless)
             self.fr_drive = rev.CANSparkMax(3, rev.MotorType.kBrushless)
