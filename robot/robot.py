@@ -5,8 +5,8 @@ import rev
 import ctre
 from marsutils import with_ctrl_manager
 
-from .components import Drive
-from .controls import Testing
+from components import Drive
+from controls import Test1, Test2
 
 
 @with_ctrl_manager
@@ -15,7 +15,8 @@ class Kevin(magicbot.MagicRobot):
     drive: Drive
 
     # Control modes
-    testing: Testing
+    test1: Test1
+    test2: Test2
 
     def createObjects(self):
         """Create magicbot components"""
@@ -55,7 +56,7 @@ class Kevin(magicbot.MagicRobot):
         # Misc components
 
         # PDP for monitoring power usage
-        self.pdp = wpilib.PowerDistributionPanel(0)
+        self.pdp = wpilib.PowerDistributionPanel(1)
         wpilib.SmartDashboard.putData("PowerDistributionPanel", self.pdp)
 
         # Launch camera server
@@ -65,3 +66,8 @@ class Kevin(magicbot.MagicRobot):
         """Prepare for autonomous mode"""
 
         magicbot.MagicRobot.autonomous(self)
+
+
+if __name__ == "__main__":
+    # Run robot
+    wpilib.run(Kevin)
