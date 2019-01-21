@@ -3,14 +3,14 @@ import wpilib
 
 from wpilib.interfaces.generichid import GenericHID
 
-from ..components.drive import DriveMode, Drive
+from components.drive import DriveMode, Drive
 
 
-class Testing(marsutils.ControlInterface):
+class Test1(marsutils.ControlInterface):
     """ A bunch of random controls for testing
     """
 
-    _DISPLAY_NAME = "Testing"
+    _DISPLAY_NAME = "Test 1"
 
     gamepad: wpilib.XboxController
 
@@ -26,9 +26,9 @@ class Testing(marsutils.ControlInterface):
 
         if self.drive_mode == DriveMode.MECANUM:
             self.drive.drive_mecanum(
-                self.gamepad.getX(GenericHID.Hand.kLeft),
-                -self.gamepad.getY(GenericHID.Hand.kLeft),
-                self.gamepad.getX(GenericHID.Hand.kRight),
+                self.gamepad.getX(GenericHID.Hand.kRight) * .4,
+                -self.gamepad.getY(GenericHID.Hand.kRight) * .4,
+                self.gamepad.getX(GenericHID.Hand.kLeft) * .4,
             )
         else:
             self.drive.drive_tank(
