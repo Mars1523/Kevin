@@ -26,9 +26,9 @@ class Test1(marsutils.ControlInterface):
 
         if self.drive_mode == DriveMode.MECANUM:
             self.drive.drive_mecanum(
-                self.gamepad.getX(GenericHID.Hand.kRight) * .4,
-                -self.gamepad.getY(GenericHID.Hand.kRight) * .4,
-                self.gamepad.getX(GenericHID.Hand.kLeft) * .4,
+                self.gamepad.getX(GenericHID.Hand.kRight),
+                -self.gamepad.getY(GenericHID.Hand.kRight),
+                self.gamepad.getX(GenericHID.Hand.kLeft),
             )
         else:
             self.drive.drive_tank(

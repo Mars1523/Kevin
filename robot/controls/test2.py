@@ -30,7 +30,7 @@ class Test2(marsutils.ControlInterface):
             total_speed = (
                 forward_speed
                 + reverse_speed
-                + self.gamepad.getY(GenericHID.Hand.kRight)
+                + -self.gamepad.getY(GenericHID.Hand.kRight)
             )
 
             self.drive.drive_mecanum(
