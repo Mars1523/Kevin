@@ -5,6 +5,7 @@ __pycache__/
 .mypy_cache/
 
 .deploy_cfg
+networktables.ini
 
 .vscode/
 .idea/

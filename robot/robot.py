@@ -1,6 +1,7 @@
 import magicbot
 import wpilib
 import wpilib.drive
+from wpilib.shuffleboard import Shuffleboard
 import rev
 import ctre
 from marsutils import with_ctrl_manager
@@ -20,12 +21,22 @@ class Kevin(magicbot.MagicRobot):
 
     def createObjects(self):
         """Create magicbot components"""
+
         # Inputs
         self.gamepad = wpilib.XboxController(0)
 
+        # Dashboard items
+        self.prefs = Shuffleboard.getTab("Preferences")
+
+        self.curiosity_compat = (
+            self.prefs.addPersistent("curiosity_compat", False)
+            .withWidget("Toggle Box")
+            .getEntry()
+        )
+
         # Drive motors
         # Curisoity has talons, we can use it for testing
-        if wpilib.SmartDashboard.getBoolean("curiosity_compat", False):
+        if self.curiosity_compat.get():
             self.fl_drive = ctre.WPI_TalonSRX(10)
             self.fr_drive = ctre.WPI_TalonSRX(11)
             self.rl_drive = ctre.WPI_TalonSRX(12)
@@ -36,11 +47,30 @@ class Kevin(magicbot.MagicRobot):
             self.fr_drive = ctre.WPI_TalonSRX(3)
             self.rl_drive = ctre.WPI_TalonSRX(4)
             self.rr_drive = ctre.WPI_TalonSRX(5)
+            # Additional motors
+            self.fl_drive2 = ctre.WPI_TalonSRX(10)
+            self.fr_drive2 = ctre.WPI_TalonSRX(11)
+            self.rl_drive2 = ctre.WPI_TalonSRX(12)
+            self.rr_drive2 = ctre.WPI_TalonSRX(13)
+            self.fl_drive2.set(ctre.ControlMode.Follower, 2)
+            self.fr_drive2.set(ctre.ControlMode.Follower, 3)
+            self.rl_drive2.set(ctre.ControlMode.Follower, 4)
+            self.rr_drive2.set(ctre.ControlMode.Follower, 5)
         else:
             self.fl_drive = rev.CANSparkMax(2, rev.MotorType.kBrushless)
             self.fr_drive = rev.CANSparkMax(3, rev.MotorType.kBrushless)
             self.rl_drive = rev.CANSparkMax(4, rev.MotorType.kBrushless)
             self.rr_drive = rev.CANSparkMax(5, rev.MotorType.kBrushless)
+            # Additional motors
+            self.fl_drive2 = rev.CANSparkMax(10, rev.MotorType.kBrushless)
+            self.fr_drive2 = rev.CANSparkMax(11, rev.MotorType.kBrushless)
+            self.rl_drive2 = rev.CANSparkMax(12, rev.MotorType.kBrushless)
+            self.rr_drive2 = rev.CANSparkMax(13, rev.MotorType.kBrushless)
+            # Follower api does not exist yet
+            self.fl_drive = wpilib.SpeedControllerGroup(self.fl_drive, self.fl_drive2)
+            self.fr_drive = wpilib.SpeedControllerGroup(self.fr_drive, self.fr_drive2)
+            self.rl_drive = wpilib.SpeedControllerGroup(self.rl_drive, self.rl_drive2)
+            self.rr_drive = wpilib.SpeedControllerGroup(self.rr_drive, self.rr_drive2)
 
         # left
         self.left_drive = wpilib.SpeedControllerGroup(self.fl_drive, self.rl_drive)
