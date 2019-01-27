@@ -4,6 +4,7 @@ import wpilib
 from wpilib.interfaces.generichid import GenericHID
 
 from components.drive import DriveMode, Drive
+from components import Lift
 
 
 class Test2(marsutils.ControlInterface):
@@ -13,8 +14,10 @@ class Test2(marsutils.ControlInterface):
     _DISPLAY_NAME = "Test 2"
 
     gamepad: wpilib.XboxController
+    gamepad2: wpilib.XboxController
 
     drive: Drive
+    lift: Lift
 
     def __init__(self):
         self.drive_mode = DriveMode.MECANUM
@@ -43,3 +46,8 @@ class Test2(marsutils.ControlInterface):
                 -self.gamepad.getY(GenericHID.Hand.kRight),
                 self.gamepad.getX(GenericHID.Hand.kLeft),
             )
+
+        self.lift.set_speed(
+            -self.gamepad2.getTriggerAxis(GenericHID.Hand.kLeft)
+            + self.gamepad2.getTriggerAxis(GenericHID.Hand.kRight)
+        )

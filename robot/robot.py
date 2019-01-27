@@ -6,7 +6,7 @@ import rev
 import ctre
 from marsutils import with_ctrl_manager
 
-from components import Drive
+from components import Drive, Lift
 from controls import Test1, Test2
 
 
@@ -14,6 +14,7 @@ from controls import Test1, Test2
 class Kevin(magicbot.MagicRobot):
     # Magic components
     drive: Drive
+    lift: Lift
 
     # Control modes
     test1: Test1
@@ -24,6 +25,7 @@ class Kevin(magicbot.MagicRobot):
 
         # Inputs
         self.gamepad = wpilib.XboxController(0)
+        self.gamepad2 = wpilib.XboxController(1)
 
         # Dashboard items
         self.prefs = Shuffleboard.getTab("Preferences")
@@ -65,6 +67,11 @@ class Kevin(magicbot.MagicRobot):
         self.tank_drive = wpilib.drive.DifferentialDrive(
             self.left_drive, self.right_drive
         )
+
+        # Lift
+        self.lift_motor = ctre.WPI_VictorSPX(8)
+        self.lift_follower = ctre.WPI_VictorSPX(9)
+        self.lift_follower.set(ctre.ControlMode.Follower, 8)
 
         # Pneumatics
         self.octacanum_shifter = wpilib.DoubleSolenoid(0, 1)
