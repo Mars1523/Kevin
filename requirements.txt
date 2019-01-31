@@ -3,4 +3,4 @@ wpilib
 robotpy-rev
 robotpy-ctre
 
-marsutils ~= 0.2
+marsutils ~= 0.4
