@@ -4,12 +4,14 @@ import wpilib.drive
 from wpilib.shuffleboard import Shuffleboard
 import rev
 import ctre
-from marsutils import with_ctrl_manager
+from marsutils import with_ctrl_manager, with_setup
 
 from components import Drive, Lift
 from controls import Test1, Test2
 
 
+# Order matters
+@with_setup
 @with_ctrl_manager
 class Kevin(magicbot.MagicRobot):
     # Magic components
@@ -20,6 +22,9 @@ class Kevin(magicbot.MagicRobot):
     test1: Test1
     test2: Test2
 
+    # Dont add control chooser to smartdashboard
+    _CONTROL_CHOOSER_DASHBOARD_KEY = None
+
     def createObjects(self):
         """Create magicbot components"""
 
@@ -29,6 +34,8 @@ class Kevin(magicbot.MagicRobot):
 
         # Dashboard items
         self.prefs = Shuffleboard.getTab("Preferences")
+        self.drive_tab = Shuffleboard.getTab("Drive")
+        self.debug_tab = Shuffleboard.getTab("Debugging")
 
         self.curiosity_compat = (
             self.prefs.addPersistent("curiosity_compat", False)
@@ -81,10 +88,18 @@ class Kevin(magicbot.MagicRobot):
 
         # PDP for monitoring power usage
         self.pdp = wpilib.PowerDistributionPanel(1)
-        wpilib.SmartDashboard.putData("PowerDistributionPanel", self.pdp)
+        self.debug_tab.add(title="PDP", value=self.pdp)
+
+        self.debug_tab.add(self.mecanum_drive)
+        self.debug_tab.add(self.tank_drive)
 
         # Launch camera server
         wpilib.CameraServer.launch()
+
+    def setup(self):
+        self.drive_tab.add(self._control_manager.control_chooser, title="Control_Mode")
+        self.drive_tab.add(4, title="Control_Mode2")
+        self._control_manager.setup_listener("Shuffleboard/Drive/Control_Mode")
 
     def autonomous(self):
         """Prepare for autonomous mode"""
