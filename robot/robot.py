@@ -4,6 +4,7 @@ import wpilib.drive
 from wpilib.shuffleboard import Shuffleboard
 import rev
 import ctre
+import navx
 from marsutils import with_ctrl_manager, with_setup
 
 from components import Drive, Lift
@@ -85,6 +86,8 @@ class Kevin(magicbot.MagicRobot):
         # Default state is extended (mecanum)
         self.octacanum_shifter.set(wpilib.DoubleSolenoid.Value.kForward)
         # Misc components
+
+        self.navx = navx.AHRS.create_spi()
 
         # PDP for monitoring power usage
         self.pdp = wpilib.PowerDistributionPanel(1)

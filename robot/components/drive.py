@@ -1,6 +1,7 @@
 import wpilib
 import wpilib.drive
 from enum import Enum, auto
+import navx
 
 
 class DriveMode(Enum):
@@ -25,6 +26,8 @@ class Drive:
     mecanum_drive: wpilib.drive.MecanumDrive
 
     octacanum_shifter: wpilib.DoubleSolenoid
+
+    navx: navx.AHRS
 
     # front_left_enc: CANTalonEncoder
     # front_right_enc: CANTalonEncoder

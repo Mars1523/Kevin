@@ -26,6 +26,8 @@ class PhysicsEngine:
 
         self.tank_drivetrain = drivetrains.FourMotorDrivetrain(x_wheelbase=2, speed=5)
 
+        self.physics_controller.add_device_gyro_channel("navxmxp_spi_4_angle")
+
     def update_sim(self, hal_data, now, tm_diff):
         """
         Called when the simulation parameters for the program need to be
