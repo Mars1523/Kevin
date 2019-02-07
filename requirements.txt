@@ -2,5 +2,6 @@ pyfrc
 wpilib
 robotpy-rev
 robotpy-ctre
+robotpy-navx
 
 marsutils ~= 0.4
