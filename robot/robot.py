@@ -8,7 +8,7 @@ import navx
 from marsutils import with_ctrl_manager, with_setup
 
 from components import Drive, Lift
-from controls import Test1, Test2
+from controls import Primary
 
 
 # Order matters
@@ -20,8 +20,7 @@ class Kevin(magicbot.MagicRobot):
     lift: Lift
 
     # Control modes
-    test1: Test1
-    test2: Test2
+    primary: Primary
 
     # Dont add control chooser to smartdashboard
     _CONTROL_CHOOSER_DASHBOARD_KEY = None
