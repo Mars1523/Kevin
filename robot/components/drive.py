@@ -1,6 +1,7 @@
 import wpilib
 import wpilib.drive
 from enum import Enum, auto
+import math
 import navx
 
 
@@ -48,6 +49,13 @@ class Drive:
         # Mecanum only
         self.x = 0
 
+        self.limited_pos_y = 0
+        self.limited_neg_y = 0
+        self.limited_pos_x = 0
+        self.limited_neg_x = 0
+        self.limit_y = 0.2
+        self.limit_x = 0.15
+
     def drive_mecanum(self, y, x, z):
         self.rotation = z
         self.y = y
@@ -65,14 +73,18 @@ class Drive:
         self.drive_mode = mode
 
     def execute(self):
+        rot = math.pow(self.rotation, 3)
+        y = self.ramp_y(math.pow(self.y, 3))
+        x = self.rampX(math.pow(self.x, 3))
         # feed the other drive train to appease the motor safety
         if self.drive_mode == DriveMode.TANK:
             self.octacanum_shifter.set(wpilib.DoubleSolenoid.Value.kForward)
-            self.tank_drive.arcadeDrive(self.y, self.rotation)
+            # We cube the inputs above
+            self.tank_drive.arcadeDrive(y, rot, squareInputs=False)
             self.mecanum_drive.feed()
         elif self.drive_mode == DriveMode.MECANUM:
             self.octacanum_shifter.set(wpilib.DoubleSolenoid.Value.kReverse)
-            self.mecanum_drive.driveCartesian(self.y, self.x, self.rotation)
+            self.mecanum_drive.driveCartesian(y, x, rot)
             self.tank_drive.feed()
 
         self.x = 0
@@ -87,3 +99,44 @@ class Drive:
         # self.front_right_enc.zero()
         # self.rear_left_enc.zero()
         # self.rear_right_enc.zero()
+
+    # Simple ramp
+    def ramp_y(self, y):
+        if y > 0:
+            change_y = y - self.limited_pos_y
+            if change_y > self.limit:
+                change_y = self.limit_y
+            elif change_y < -self.limit_y:
+                change_y = -self.limit_y
+            self.limited_pos_y += change_y
+            self.limited_neg_y = 0
+            return self.limited_pos_y
+        else:
+            change_y = y - self.limited_neg_y
+            if change_y > self.limit_y:
+                change_y = self.limit_y
+            elif change_y < -self.limit_y:
+                change_y = -self.limit_y
+            self.limited_neg_y += change_y
+            self.limited_pos_y = 0
+            return self.limited_neg_y
+
+    def rampX(self, x):
+        if x > 0:
+            changeX = x - self.limited_pos_x
+            if changeX > self.limit_x:
+                changeX = self.limit_x
+            elif changeX < -self.limit_x:
+                changeX = -self.limit_x
+            self.limited_pos_x += changeX
+            self.limited_neg_x = 0
+            return self.limited_pos_x
+        else:
+            changeX = x - self.limited_neg_x
+            if changeX > self.limit_x:
+                changeX = self.limit_x
+            elif changeX < -self.limit_x:
+                changeX = -self.limit_x
+            self.limited_neg_x += changeX
+            self.limited_pos_x = 0
+            return self.limited_neg_x
