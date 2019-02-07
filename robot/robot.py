@@ -7,7 +7,7 @@ import ctre
 import navx
 from marsutils import with_ctrl_manager, with_setup
 
-from components import Drive, Lift
+from components import Drive, Lift, Intake
 from controls import Primary
 
 
@@ -18,6 +18,7 @@ class Kevin(magicbot.MagicRobot):
     # Magic components
     drive: Drive
     lift: Lift
+    intake: Intake
 
     # Control modes
     primary: Primary
@@ -80,6 +81,10 @@ class Kevin(magicbot.MagicRobot):
         self.lift_motor = ctre.WPI_VictorSPX(8)
         self.lift_follower = ctre.WPI_VictorSPX(9)
         self.lift_follower.set(ctre.ControlMode.Follower, 8)
+
+        # Intake
+        self.wrist_motor = ctre.WPI_TalonSRX(10)
+        self.intake_motor = ctre.WPI_TalonSRX(11)
 
         # Pneumatics
         self.octacanum_shifter = wpilib.DoubleSolenoid(0, 1)
