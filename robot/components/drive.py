@@ -75,7 +75,7 @@ class Drive:
     def execute(self):
         rot = math.pow(self.rotation, 3)
         y = self.ramp_y(math.pow(self.y, 3))
-        x = self.rampX(math.pow(self.x, 3))
+        x = self.ramp_x(math.pow(self.x, 3))
         # feed the other drive train to appease the motor safety
         if self.drive_mode == DriveMode.TANK:
             self.octacanum_shifter.set(wpilib.DoubleSolenoid.Value.kForward)
@@ -104,7 +104,7 @@ class Drive:
     def ramp_y(self, y):
         if y > 0:
             change_y = y - self.limited_pos_y
-            if change_y > self.limit:
+            if change_y > self.limit_y:
                 change_y = self.limit_y
             elif change_y < -self.limit_y:
                 change_y = -self.limit_y
@@ -121,22 +121,22 @@ class Drive:
             self.limited_pos_y = 0
             return self.limited_neg_y
 
-    def rampX(self, x):
+    def ramp_x(self, x):
         if x > 0:
-            changeX = x - self.limited_pos_x
-            if changeX > self.limit_x:
-                changeX = self.limit_x
-            elif changeX < -self.limit_x:
-                changeX = -self.limit_x
-            self.limited_pos_x += changeX
+            change_x = x - self.limited_pos_x
+            if change_x > self.limit_x:
+                change_x = self.limit_x
+            elif change_x < -self.limit_x:
+                change_x = -self.limit_x
+            self.limited_pos_x += change_x
             self.limited_neg_x = 0
             return self.limited_pos_x
         else:
-            changeX = x - self.limited_neg_x
-            if changeX > self.limit_x:
-                changeX = self.limit_x
-            elif changeX < -self.limit_x:
-                changeX = -self.limit_x
-            self.limited_neg_x += changeX
+            change_x = x - self.limited_neg_x
+            if change_x > self.limit_x:
+                change_x = self.limit_x
+            elif change_x < -self.limit_x:
+                change_x = -self.limit_x
+            self.limited_neg_x += change_x
             self.limited_pos_x = 0
             return self.limited_neg_x
