@@ -1,67 +1,138 @@
 import wpilib
 from wpilib.interfaces import PIDSource
 
-# TODO: Is this ~~trip~~ really necessary and if so, merge it into marsutils
+import rev
+import ctre
+
+# TODO: Merge into marsutils
 
 
 class BaseEncoder(wpilib.interfaces.PIDSource):
     """
-        This class deals with the zeroing and reading
-        encoders
+        BaseEncoder provides a consistent interface to encoders
     """
 
-    def get(self) -> int:
-        return 0.0
+    def get_position(self) -> float:
+        """
+        Gets position from the feedback sensor
+        :return: current position
+        """
+        raise NotImplementedError
+
+    def get_velocity(self) -> float:
+        """
+        Gets velocity from the feedback sensor
+        :return: current velocity
+        """
+        raise NotImplementedError
 
     def zero(self):
-        pass
+        """
+        Resets the current position to zero
+        """
+        raise NotImplementedError
+
+    def setPIDSourceType(self, pidSource: PIDSource.PIDSourceType) -> None:
+        raise NotImplementedError
 
     def getPIDSourceType(self) -> PIDSource.PIDSourceType:
         return PIDSource.PIDSourceType.kDisplacement
 
-    def pidGet(self) -> int:
-        return self.get()
+    def pidGet(self) -> float:
+        """
+        Input for PIDSource
+        :return: feedback position
+        """
+        return self.get_position()
 
 
-class CANTalonEncoder(BaseEncoder):
+class CANTalonQuadEncoder(BaseEncoder):
     """
-        This class deals with the zeroing and reading
-        from the encoders connected to motor controllers
+        Access quadrature encoders connected to CTRE Talons
     """
 
-    def __init__(self, motor, is_reversed=False):
+    def __init__(self, motor: ctre.WPI_TalonSRX, reversed=False):
         self.motor = motor
-        if is_reversed:
+        if reversed:
             self.mod = -1
         else:
             self.mod = 1
-        self.initialValue = self.mod * self.motor.getAnalogInPosition()
-
-    def get(self) -> int:
-        return (self.mod * self.motor.getAnalogInPosition()) - self.initialValue
 
     def zero(self):
-        self.initialValue = self.mod * self.motor.getAnalogInPosition()
+        self.motor.setQuadraturePosition(0)
+
+    def get_position(self) -> float:
+        return self.mod * self.motor.getQuadraturePosition()
+
+    def get_velocity(self) -> float:
+        return self.motor.getQuadratureVelocity()
+
+
+class CANTalonAnalogEncoder(BaseEncoder):
+    """
+        Access analog encoders connected to CTRE Talons
+    """
+
+    def __init__(self, motor: ctre.WPI_TalonSRX, reversed=False):
+        self.motor = motor
+        if reversed:
+            self.mod = -1
+        else:
+            self.mod = 1
+
+    def zero(self):
+        self.motor.setAnalogPosition(0)
+
+    def get_position(self) -> float:
+        return self.mod * self.motor.getAnalogIn()
+
+    def get_velocity(self) -> float:
+        return self.motor.getAnalogInVel()
+
+
+class SparkMaxEncoder(BaseEncoder):
+    """
+        Access Spark Max hall sensors or external sensors
+    """
+
+    def __init__(self, motor: rev.CANSparkMax, reversed=False):
+        self.encoder = motor.getEncoder()
+        if reversed:
+            self.mod = -1
+        else:
+            self.mod = 1
+        self.initialValue = self.mod * self.encoder.getPosition()
+
+    def zero(self):
+        self.initialValue = self.mod * self.encoder.getPosition()
+
+    def get_position(self) -> float:
+        return (self.mod * self.encoder.getPosition()) - self.initialValue
+
+    def get_velocity(self) -> float:
+        return self.encoder.getVelocity()
 
 
 class ExternalEncoder(BaseEncoder):
     """
-        This class deals with the zeroing and reading
-        from the encoders connected over DIO
+        This class provides access to encoders connected over DIO
     """
 
     def __init__(
         self,
         chan_a,
         chan_b,
-        is_reversed=False,
+        reversed=False,
         encoding_type=wpilib.Encoder.EncodingType.k4X,
     ):
-        self.encoder = wpilib.Encoder(chan_a, chan_b, is_reversed, encoding_type)
+        self.encoder = wpilib.Encoder(chan_a, chan_b, reversed, encoding_type)
         self.initialValue = self.encoder.getDistance()
 
-    def get(self) -> int:
+    def get_position(self) -> float:
         return self.encoder.getDistance()
+
+    def get_velocity(self) -> float:
+        return self.encoder.getRate()
 
     def zero(self):
         self.encoder.reset()
