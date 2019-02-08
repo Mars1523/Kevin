@@ -7,7 +7,7 @@ import ctre
 # TODO: Merge into marsutils
 
 
-class BaseEncoder(wpilib.interfaces.PIDSource):
+class BaseEncoder(wpilib.interfaces.PIDSource, wpilib.sendablebase.SendableBase):
     """
         BaseEncoder provides a consistent interface to encoders
     """
@@ -44,6 +44,12 @@ class BaseEncoder(wpilib.interfaces.PIDSource):
         :return: feedback position
         """
         return self.get_position()
+
+    def initSendable(self, builder: wpilib.SendableBuilder) -> None:
+        builder.setSmartDashboardType("Encoder")
+
+        builder.addDoubleProperty("Speed", self.get_velocity, None)
+        builder.addDoubleProperty("Distance", self.get_position, None)
 
 
 class CANTalonQuadEncoder(BaseEncoder):
