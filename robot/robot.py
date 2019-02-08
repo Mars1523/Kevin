@@ -8,6 +8,7 @@ import navx
 from marsutils import with_ctrl_manager, with_setup
 
 from components import Drive, Lift, Intake
+from common.encoder import SparkMaxEncoder, CANTalonQuadEncoder
 from controls import Primary
 
 
@@ -57,11 +58,21 @@ class Kevin(magicbot.MagicRobot):
             self.fr_drive = ctre.WPI_TalonSRX(3)
             self.rl_drive = ctre.WPI_TalonSRX(4)
             self.rr_drive = ctre.WPI_TalonSRX(5)
+
+            self.fl_drive_encoder = CANTalonQuadEncoder(self.fl_drive)
+            self.fr_drive_encoder = CANTalonQuadEncoder(self.fr_drive)
+            self.rl_drive_encoder = CANTalonQuadEncoder(self.rl_drive)
+            self.rr_drive_encoder = CANTalonQuadEncoder(self.rr_drive)
         else:
             self.fl_drive = rev.CANSparkMax(2, rev.MotorType.kBrushless)
             self.fr_drive = rev.CANSparkMax(3, rev.MotorType.kBrushless)
             self.rl_drive = rev.CANSparkMax(4, rev.MotorType.kBrushless)
             self.rr_drive = rev.CANSparkMax(5, rev.MotorType.kBrushless)
+
+            self.fl_drive_encoder = SparkMaxEncoder(self.fl_drive)
+            self.fr_drive_encoder = SparkMaxEncoder(self.fr_drive)
+            self.rl_drive_encoder = SparkMaxEncoder(self.rl_drive)
+            self.rr_drive_encoder = SparkMaxEncoder(self.rr_drive)
 
         # left
         self.left_drive = wpilib.SpeedControllerGroup(self.fl_drive, self.rl_drive)
@@ -100,6 +111,12 @@ class Kevin(magicbot.MagicRobot):
 
         self.debug_tab.add(self.mecanum_drive)
         self.debug_tab.add(self.tank_drive)
+
+        encoders_list = self.debug_tab.getLayout("List", "Drive Encoders")
+        encoders_list.add(title="Front Left", value=self.fl_drive_encoder)
+        encoders_list.add(title="Front Right", value=self.fr_drive_encoder)
+        encoders_list.add(title="Rear Left", value=self.rl_drive_encoder)
+        encoders_list.add(title="Rear Right", value=self.rr_drive_encoder)
 
         # Launch camera server
         wpilib.CameraServer.launch()

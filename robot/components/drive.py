@@ -4,6 +4,8 @@ from enum import Enum, auto
 import math
 import navx
 
+from common.encoder import BaseEncoder
+
 
 class DriveMode(Enum):
     MECANUM = auto()
@@ -30,10 +32,10 @@ class Drive:
 
     navx: navx.AHRS
 
-    # front_left_enc: CANTalonEncoder
-    # front_right_enc: CANTalonEncoder
-    # rear_left_enc: CANTalonEncoder
-    # rear_right_enc: CANTalonEncoder
+    fl_drive_encoder: BaseEncoder
+    fr_drive_encoder: BaseEncoder
+    rl_drive_encoder: BaseEncoder
+    rr_drive_encoder: BaseEncoder
 
     def __init__(self):
         # Current drive mode, this changes when a control calls its drive function
