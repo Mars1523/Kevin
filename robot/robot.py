@@ -8,7 +8,7 @@ import navx
 from marsutils import with_ctrl_manager, with_setup
 
 from components import Drive, Lift, Intake
-from common.encoder import SparkMaxEncoder, CANTalonQuadEncoder
+from common.encoder import SparkMaxEncoder, CANTalonQuadEncoder, ExternalEncoder
 from controls import Primary
 
 
@@ -93,6 +93,8 @@ class Kevin(magicbot.MagicRobot):
         self.lift_follower = ctre.WPI_VictorSPX(9)
         self.lift_follower.set(ctre.ControlMode.Follower, 8)
 
+        self.lift_encoder = ExternalEncoder(0, 1)
+
         # Intake
         self.wrist_motor = ctre.WPI_TalonSRX(10)
         self.intake_motor = ctre.WPI_TalonSRX(11)
@@ -117,6 +119,7 @@ class Kevin(magicbot.MagicRobot):
         encoders_list.add(title="Front Right", value=self.fr_drive_encoder)
         encoders_list.add(title="Rear Left", value=self.rl_drive_encoder)
         encoders_list.add(title="Rear Right", value=self.rr_drive_encoder)
+        self.debug_tab.add(title="Lift Encoder", value=self.lift_encoder)
 
         # Launch camera server
         wpilib.CameraServer.launch()
