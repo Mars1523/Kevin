@@ -30,6 +30,8 @@ class Primary(marsutils.ControlInterface):
         super().__init__()
 
     def teleopPeriodic(self):
+        # TODO: Fix for bug in wpilib
+        wpilib.shuffleboard.Shuffleboard.update()
         if self.gamepad.getRawButtonPressed(6):  # TODO: Change id
             self.drive_mode = self.drive_mode.toggle()
 
