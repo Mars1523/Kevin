@@ -2,6 +2,7 @@ import marsutils
 import marsutils.math
 import wpilib
 import navx
+from wpilib.drive.robotdrivebase import RobotDriveBase
 
 from wpilib.interfaces.generichid import GenericHID
 
@@ -27,15 +28,16 @@ class Primary(marsutils.ControlInterface):
 
     def __init__(self):
         self.drive_mode = DriveMode.TANK
+        self.slow = False
         super().__init__()
 
     def teleopPeriodic(self):
         # TODO: Fix for bug in wpilib
         wpilib.shuffleboard.Shuffleboard.update()
+        self.slow = self.gamepad.getBumper(GenericHID.Hand.kLeft)
+
         if self.gamepad.getRawButtonPressed(6):  # TODO: Change id
             self.drive_mode = self.drive_mode.toggle()
-
-            self.navx.setAngleAdjustment(self.navx.getAngle())
 
         if self.drive_mode == DriveMode.MECANUM:
             forward_speed = self.gamepad.getTriggerAxis(GenericHID.Hand.kRight)
@@ -46,15 +48,26 @@ class Primary(marsutils.ControlInterface):
                 + -self.gamepad.getY(GenericHID.Hand.kRight)
             )
 
+            if self.slow:
+                total_speed *= 0.45
+
             self.drive.drive_mecanum(
                 self.gamepad.getX(GenericHID.Hand.kRight),
                 total_speed,
                 self.gamepad.getX(GenericHID.Hand.kLeft),
             )
         else:
-            self.drive.drive_tank(
-                -self.gamepad.getY(GenericHID.Hand.kRight),
-                self.gamepad.getX(GenericHID.Hand.kLeft),
+            if self.slow:
+                self.drive.drive_tank(
+                    -self.gamepad.getY(GenericHID.Hand.kRight) * 0.45,
+                    self.gamepad.getX(GenericHID.Hand.kLeft) * 0.55,
+                )
+            else:
+                self.drive.drive_tank(
+                    -self.gamepad.getY(GenericHID.Hand.kRight),
+                    self.gamepad.getX(GenericHID.Hand.kLeft),
+                )
+
         pov = self.gamepad2.getPOV()
         if pov == 180:  # Down (Minimum)
             self.lift.set_setpoint(0)
@@ -80,8 +93,6 @@ class Primary(marsutils.ControlInterface):
             )
         )
 
-        self.intake.set_speed(self.gamepad2.getY(GenericHID.Hand.kLeft))
-        self.intake.set_wrist(self.gamepad2.getY(GenericHID.Hand.kRight))
         if self.gamepad2.getXButton():
             self.intake.extend_piston()
         else:

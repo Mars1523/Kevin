@@ -76,6 +76,10 @@ class Kevin(magicbot.MagicRobot):
             self.rl_drive_encoder = SparkMaxEncoder(self.rl_drive)
             self.rr_drive_encoder = SparkMaxEncoder(self.rr_drive)
 
+            self.fl_drive.setRampRate(0.2)
+            self.fr_drive.setRampRate(0.2)
+            self.rl_drive.setRampRate(0.2)
+            self.rr_drive.setRampRate(0.2)
         # left
         self.left_drive = wpilib.SpeedControllerGroup(self.fl_drive, self.rl_drive)
         # right
@@ -132,7 +136,6 @@ class Kevin(magicbot.MagicRobot):
 
     def setup(self):
         self.drive_tab.add(self._control_manager.control_chooser, title="Control_Mode")
-        self.drive_tab.add(4, title="Control_Mode2")
         self._control_manager.setup_listener("Shuffleboard/Drive/Control_Mode")
 
     def autonomous(self):
