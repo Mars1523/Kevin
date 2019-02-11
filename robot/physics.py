@@ -50,6 +50,7 @@ class PhysicsEngine:
         rear_l = hal_data["CAN"][4]["value"]
         rear_r = -hal_data["CAN"][5]["value"]
 
+        # TODO: The encoder math is _completely_ wrong
         if is_tank:
             speed, rotation = self.tank_drivetrain.get_vector(
                 rear_l, rear_r, front_l, front_r
