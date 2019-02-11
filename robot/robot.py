@@ -108,8 +108,10 @@ class Kevin(magicbot.MagicRobot):
         self.navx = navx.AHRS.create_spi()
 
         # PDP for monitoring power usage
-        self.pdp = wpilib.PowerDistributionPanel(1)
-        self.debug_tab.add(title="PDP", value=self.pdp)
+        # NOTE: Causes drive stutter
+        # self.pdp = wpilib.PowerDistributionPanel(1)
+        # self.pdp.clearStickyFaults()
+        # self.debug_tab.add(title="PDP", value=self.pdp)
 
         self.debug_tab.add(self.mecanum_drive)
         self.debug_tab.add(self.tank_drive)
