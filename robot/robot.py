@@ -83,7 +83,6 @@ class Kevin(magicbot.MagicRobot):
         self.mecanum_drive = wpilib.drive.MecanumDrive(
             self.fl_drive, self.rl_drive, self.fr_drive, self.rr_drive
         )
-        self.mecanum_drive.setDeadband(0.06)
         self.tank_drive = wpilib.drive.DifferentialDrive(
             self.left_drive, self.right_drive
         )
