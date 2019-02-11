@@ -94,7 +94,7 @@ class Kevin(magicbot.MagicRobot):
         self.lift_follower = ctre.WPI_VictorSPX(9)
         self.lift_follower.set(ctre.ControlMode.Follower, 8)
 
-        self.lift_encoder = ExternalEncoder(0, 1)
+        self.lift_encoder = ExternalEncoder(0, 1, reversed=True)
 
         # Intake
         self.wrist_motor = ctre.WPI_TalonSRX(10)
