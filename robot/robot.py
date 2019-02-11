@@ -100,6 +100,9 @@ class Kevin(magicbot.MagicRobot):
         self.wrist_motor = ctre.WPI_TalonSRX(10)
         self.intake_motor = ctre.WPI_TalonSRX(11)
 
+        # Intake pistons
+        self.intake_piston = wpilib.DoubleSolenoid(4, 5)
+
         # Pneumatics
         self.octacanum_shifter = wpilib.DoubleSolenoid(0, 1)
         # Default state is extended (mecanum)

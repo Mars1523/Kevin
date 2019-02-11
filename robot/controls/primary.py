@@ -66,3 +66,7 @@ class Primary(marsutils.ControlInterface):
 
         self.intake.set_speed(self.gamepad2.getY(GenericHID.Hand.kLeft))
         self.intake.set_wrist(self.gamepad2.getY(GenericHID.Hand.kRight))
+        if self.gamepad2.getXButton():
+            self.intake.extend_piston()
+        else:
+            self.intake.retract_piston()
