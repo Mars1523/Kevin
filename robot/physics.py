@@ -1,4 +1,4 @@
-from pyfrc.physics import drivetrains
+from pyfrc.physics import drivetrains, motion
 import math
 
 ENCODER_REVOLUTION = 1024
@@ -19,6 +19,9 @@ class PhysicsEngine:
         """
         # Change these parameters to fit your robot!
         """
+
+        # Create a lift simulation
+        self.lift_motion = motion.LinearMotion("Lift", 6, 360)
 
         self.mecaum_drivetrain = drivetrains.MecanumDrivetrain(
             x_wheelbase=2, y_wheelbase=2, speed=5
@@ -70,3 +73,10 @@ class PhysicsEngine:
         hal_data["CAN"][4]["quad_position"] = int(self.fr_encoder * ENCODER_TICKS)
         hal_data["CAN"][3]["quad_position"] = int(self.rl_encoder * ENCODER_TICKS)
         hal_data["CAN"][5]["quad_position"] = int(self.rr_encoder * ENCODER_TICKS)
+
+        # Simulate the lift encoders
+        hal_data["encoder"][0]["count"] = self.lift_motion.compute(
+            hal_data["CAN"][8]["value"], tm_diff
+        )
+
+        hal_data["encoder"][0]["distance_per_pulse"] = 1
