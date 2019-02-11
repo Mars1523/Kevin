@@ -55,12 +55,28 @@ class Primary(marsutils.ControlInterface):
             self.drive.drive_tank(
                 -self.gamepad.getY(GenericHID.Hand.kRight),
                 self.gamepad.getX(GenericHID.Hand.kLeft),
+        pov = self.gamepad2.getPOV()
+        if pov == 180:  # Down (Minimum)
+            self.lift.set_setpoint(0)
+        elif pov == 270:  # Left
+            self.lift.set_setpoint(1025)
+        elif pov == 0:  # Up
+            self.lift.set_setpoint(2150)
+
+        setpoint = self.lift.get_setpoint()
+        if self.gamepad2.getTriggerAxis(GenericHID.Hand.kRight) > 0.02:
+            self.lift.set_setpoint(
+                setpoint + (self.gamepad2.getTriggerAxis(GenericHID.Hand.kRight) * 70)
+            )
+        if self.gamepad2.getTriggerAxis(GenericHID.Hand.kLeft) > 0.02:
+            self.lift.set_setpoint(
+                setpoint - (self.gamepad2.getTriggerAxis(GenericHID.Hand.kLeft) * 70)
             )
 
-        self.lift.set_speed(
-            marsutils.math.signed_square(
-                -self.gamepad2.getTriggerAxis(GenericHID.Hand.kLeft)
-                + self.gamepad2.getTriggerAxis(GenericHID.Hand.kRight)
+        self.intake.set_speed(-self.gamepad2.getY(GenericHID.Hand.kLeft))
+        self.intake.set_wrist(
+            RobotDriveBase.applyDeadband(
+                self.gamepad2.getY(GenericHID.Hand.kRight), 0.01
             )
         )
 
