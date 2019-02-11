@@ -11,6 +11,8 @@ from components import Drive, Lift, Intake
 from common.encoder import SparkMaxEncoder, CANTalonQuadEncoder, ExternalEncoder
 from controls import Primary
 
+from wpilib.interfaces.generichid import GenericHID
+
 
 # Order matters
 @with_setup
@@ -134,6 +136,21 @@ class Kevin(magicbot.MagicRobot):
         """Prepare for autonomous mode"""
 
         magicbot.MagicRobot.autonomous(self)
+
+    # Make the primary controller rumble briefly
+    def teleopInit(self):
+        self.gamepad.setRumble(wpilib.interfaces.GenericHID.RumbleType.kRightRumble, 1)
+
+        def stop():
+            self.gamepad.setRumble(
+                wpilib.interfaces.GenericHID.RumbleType.kRightRumble, 0
+            )
+
+        if self.isReal():
+            wpilib.Notifier(stop).startSingle(0.75)
+
+    def disabledInit(self):
+        self.gamepad.setRumble(wpilib.interfaces.GenericHID.RumbleType.kRightRumble, 0)
 
 
 if __name__ == "__main__":
