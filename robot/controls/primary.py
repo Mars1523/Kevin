@@ -8,6 +8,7 @@ from wpilib.interfaces.generichid import GenericHID
 
 from components.drive import DriveMode, Drive
 from components import Lift, Intake
+from controllers import AlignCargo
 
 
 class Primary(marsutils.ControlInterface):
@@ -26,6 +27,8 @@ class Primary(marsutils.ControlInterface):
     lift: Lift
     intake: Intake
 
+    cargo_align_ctrl: AlignCargo
+
     def __init__(self):
         self.drive_mode = DriveMode.TANK
         self.slow = False
@@ -38,6 +41,8 @@ class Primary(marsutils.ControlInterface):
 
         if self.gamepad.getRawButtonPressed(6):  # TODO: Change id
             self.drive_mode = self.drive_mode.toggle()
+
+        self.cargo_align_ctrl.set_enabled(self.gamepad.getAButton())
 
         if self.drive_mode == DriveMode.MECANUM:
             forward_speed = self.gamepad.getTriggerAxis(GenericHID.Hand.kRight)

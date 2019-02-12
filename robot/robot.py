@@ -6,8 +6,10 @@ import rev
 import ctre
 import navx
 from marsutils import with_ctrl_manager, with_setup
+from networktables import NetworkTables
 
 from components import Drive, Lift, Intake
+from controllers import AlignCargo
 from common.encoder import SparkMaxEncoder, CANTalonQuadEncoder, ExternalEncoder
 from controls import Primary
 
@@ -25,6 +27,9 @@ class Kevin(magicbot.MagicRobot):
 
     # Control modes
     primary: Primary
+
+    # Controllers
+    cargo_align_ctrl: AlignCargo
 
     # Dont add control chooser to smartdashboard
     _CONTROL_CHOOSER_DASHBOARD_KEY = None
@@ -46,6 +51,9 @@ class Kevin(magicbot.MagicRobot):
             .withWidget("Toggle Box")
             .getEntry()
         )
+
+        self.vision = NetworkTables.getTable("Vision")
+        self.cargo_yaw = self.vision.getEntry("cargoYaw")
 
         # Drive motors
         # Curisoity has talons, we can use it for testing
