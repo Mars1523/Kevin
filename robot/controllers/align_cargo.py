@@ -18,10 +18,10 @@ class AlignCargo:
             yaw = self.cargo_yaw.getNumber(0)
             self.drive.set_mode(DriveMode.MECANUM)
             if yaw > 1:
-                self.drive.drive_mecanum(0.6, 0.28, 0)
+                self.drive.drive_mecanum(0.24, 0.24, 0, adjusted=False)
                 # pass
             elif yaw < -1:
                 # pass
-                self.drive.drive_mecanum(-0.6, 0.28, 0)
+                self.drive.drive_mecanum(-0.24, 0.24, 0, adjusted=False)
             else:
-                self.drive.drive_mecanum(0, 0, 0)
+                self.drive.drive_mecanum(0, 0, 0, adjusted=False)

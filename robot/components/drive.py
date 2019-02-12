@@ -59,16 +59,22 @@ class Drive:
         self.limit_y = 0.2
         self.limit_x = 0.15
 
-    def drive_mecanum(self, y, x, z):
+        self.adjusted = True
+
+    def drive_mecanum(self, y, x, z, adjusted=True):
         self.rotation = z
         self.y = y
         self.x = x
 
+        self.adjusted = adjusted
+
         self.drive_mode = DriveMode.MECANUM
 
-    def drive_tank(self, y, z):
+    def drive_tank(self, y, z, adjusted=True):
         self.rotation = z
         self.y = y
+
+        self.adjusted = adjusted
 
         self.drive_mode = DriveMode.TANK
 
@@ -76,9 +82,14 @@ class Drive:
         self.drive_mode = mode
 
     def execute(self):
-        rot = math.pow(self.rotation, 3)
-        y = self.ramp_y(math.pow(self.y, 3))
-        x = self.ramp_x(math.pow(self.x, 3))
+        if self.adjusted:
+            rot = math.pow(self.rotation, 3)
+            y = self.ramp_y(math.pow(self.y, 3))
+            x = self.ramp_x(math.pow(self.x, 3))
+        else:
+            rot = self.rotation
+            y = self.y
+            x = self.x
         # feed the other drive train to appease the motor safety
         if self.drive_mode == DriveMode.TANK:
             self.octacanum_shifter.set(wpilib.DoubleSolenoid.Value.kForward)
