@@ -100,6 +100,8 @@ class Kevin(magicbot.MagicRobot):
         self.tank_drive = wpilib.drive.DifferentialDrive(
             self.left_drive, self.right_drive
         )
+        self.mecanum_drive.setSafetyEnabled(False)
+        self.tank_drive.setSafetyEnabled(False)
 
         # Lift
         self.lift_motor = ctre.WPI_VictorSPX(8)
