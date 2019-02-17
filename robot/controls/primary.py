@@ -1,4 +1,3 @@
-import marsutils
 import marsutils.math
 import wpilib
 import navx
@@ -44,34 +43,35 @@ class Primary(marsutils.ControlInterface):
 
         self.cargo_align_ctrl.set_enabled(self.gamepad.getAButton())
 
-        if self.drive_mode == DriveMode.MECANUM:
-            forward_speed = self.gamepad.getTriggerAxis(GenericHID.Hand.kRight)
-            reverse_speed = -self.gamepad.getTriggerAxis(GenericHID.Hand.kLeft)
-            total_speed = (
-                forward_speed
-                + reverse_speed
-                + -self.gamepad.getY(GenericHID.Hand.kRight)
-            )
-
-            if self.slow:
-                total_speed *= 0.45
-
-            self.drive.drive_mecanum(
-                self.gamepad.getX(GenericHID.Hand.kRight),
-                total_speed,
-                self.gamepad.getX(GenericHID.Hand.kLeft),
-            )
-        else:
-            if self.slow:
-                self.drive.drive_tank(
-                    -self.gamepad.getY(GenericHID.Hand.kRight) * 0.45,
-                    self.gamepad.getX(GenericHID.Hand.kLeft) * 0.55,
+        if not self.gamepad.getAButton():
+            if self.drive_mode == DriveMode.MECANUM:
+                forward_speed = self.gamepad.getTriggerAxis(GenericHID.Hand.kRight)
+                reverse_speed = -self.gamepad.getTriggerAxis(GenericHID.Hand.kLeft)
+                total_speed = (
+                    forward_speed
+                    + reverse_speed
+                    + -self.gamepad.getY(GenericHID.Hand.kRight)
                 )
-            else:
-                self.drive.drive_tank(
-                    -self.gamepad.getY(GenericHID.Hand.kRight),
+
+                if self.slow:
+                    total_speed *= 0.65
+
+                self.drive.drive_mecanum(
+                    self.gamepad.getX(GenericHID.Hand.kRight),
+                    total_speed,
                     self.gamepad.getX(GenericHID.Hand.kLeft),
                 )
+            else:
+                if self.slow:
+                    self.drive.drive_tank(
+                        -self.gamepad.getY(GenericHID.Hand.kRight) * 0.45,
+                        self.gamepad.getX(GenericHID.Hand.kLeft) * 0.55,
+                    )
+                else:
+                    self.drive.drive_tank(
+                        -self.gamepad.getY(GenericHID.Hand.kRight),
+                        self.gamepad.getX(GenericHID.Hand.kLeft),
+                    )
 
         pov = self.gamepad2.getPOV()
         if pov == 180:  # Down (Minimum)
