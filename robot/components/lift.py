@@ -1,4 +1,5 @@
 import ctre
+from ctre.basemotorcontroller import BaseMotorController
 import wpilib
 from common.encoder import BaseEncoder
 
@@ -11,7 +12,7 @@ class Lift:
         A position PID enabled lift with preset heights
     """
 
-    lift_motor: ctre.WPI_VictorSPX
+    lift_motor: BaseMotorController
     lift_encoder: BaseEncoder
 
     def setup(self):

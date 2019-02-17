@@ -104,8 +104,11 @@ class Kevin(magicbot.MagicRobot):
         self.tank_drive.setSafetyEnabled(False)
 
         # Lift
-        self.lift_motor = ctre.WPI_VictorSPX(8)
-        self.lift_follower = ctre.WPI_VictorSPX(9)
+        # TODO: IMPORTANT PRACTICE BOT vs COMP
+        # self.lift_motor = ctre.WPI_VictorSPX(8)
+        # self.lift_follower = ctre.WPI_VictorSPX(9)
+        self.lift_motor = ctre.WPI_TalonSRX(8)
+        self.lift_follower = ctre.WPI_TalonSRX(9)
         self.lift_follower.set(ctre.ControlMode.Follower, 8)
 
         self.lift_encoder = ExternalEncoder(0, 1, reversed=True)
@@ -118,9 +121,11 @@ class Kevin(magicbot.MagicRobot):
         self.intake_piston = wpilib.DoubleSolenoid(4, 5)
 
         # Pneumatics
-        self.octacanum_shifter = wpilib.DoubleSolenoid(0, 1)
+        self.octacanum_shifter_front = wpilib.DoubleSolenoid(0, 1)
+        self.octacanum_shifter_rear = wpilib.DoubleSolenoid(2, 3)
         # Default state is extended (mecanum)
-        self.octacanum_shifter.set(wpilib.DoubleSolenoid.Value.kForward)
+        self.octacanum_shifter_front.set(wpilib.DoubleSolenoid.Value.kForward)
+        self.octacanum_shifter_rear.set(wpilib.DoubleSolenoid.Value.kForward)
         # Misc components
 
         self.navx = navx.AHRS.create_spi()
@@ -142,7 +147,8 @@ class Kevin(magicbot.MagicRobot):
         self.debug_tab.add(title="Lift Encoder", value=self.lift_encoder)
 
         # Launch camera server
-        wpilib.CameraServer.launch()
+        # Disabled: Vision sent through Jetson/Pi
+        # wpilib.CameraServer.launch()
 
     def setup(self):
         self.drive_tab.add(self._control_manager.control_chooser, title="Control_Mode")
