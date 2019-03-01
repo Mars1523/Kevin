@@ -52,21 +52,15 @@ class Drive:
         # Mecanum only
         self.x = 0
 
-        self.limited_pos_y = 0
-        self.limited_neg_y = 0
-        self.limited_pos_x = 0
-        self.limited_neg_x = 0
-        self.limit_y = 0.2
-        self.limit_x = 0.15
-
         self.adjusted = True
 
-    def drive_mecanum(self, y, x, z, adjusted=True):
+    def drive_mecanum(self, y, x, z, adjusted=True, angle=0):
         self.rotation = z
         self.y = y
         self.x = x
 
         self.adjusted = adjusted
+        self.mecanum_angle_adjustment = angle
 
         self.drive_mode = DriveMode.MECANUM
 
@@ -84,8 +78,8 @@ class Drive:
     def execute(self):
         if self.adjusted:
             rot = math.pow(self.rotation, 3)
-            y = self.ramp_y(math.pow(self.y, 3))
-            x = self.ramp_x(math.pow(self.x, 3))
+            y = math.pow(self.y, 3)
+            x = math.pow(self.x, 3)
         else:
             rot = self.rotation
             y = self.y
@@ -100,7 +94,9 @@ class Drive:
         elif self.drive_mode == DriveMode.MECANUM:
             self.octacanum_shifter_front.set(wpilib.DoubleSolenoid.Value.kReverse)
             self.octacanum_shifter_rear.set(wpilib.DoubleSolenoid.Value.kReverse)
-            self.mecanum_drive.driveCartesian(y, x, rot)
+            self.mecanum_drive.driveCartesian(
+                y, x, rot, gyroAngle=self.mecanum_angle_adjustment
+            )
             self.tank_drive.feed()
 
         self.x = 0
@@ -115,44 +111,3 @@ class Drive:
         # self.front_right_enc.zero()
         # self.rear_left_enc.zero()
         # self.rear_right_enc.zero()
-
-    # Simple ramp
-    def ramp_y(self, y):
-        if y > 0:
-            change_y = y - self.limited_pos_y
-            if change_y > self.limit_y:
-                change_y = self.limit_y
-            elif change_y < -self.limit_y:
-                change_y = -self.limit_y
-            self.limited_pos_y += change_y
-            self.limited_neg_y = 0
-            return self.limited_pos_y
-        else:
-            change_y = y - self.limited_neg_y
-            if change_y > self.limit_y:
-                change_y = self.limit_y
-            elif change_y < -self.limit_y:
-                change_y = -self.limit_y
-            self.limited_neg_y += change_y
-            self.limited_pos_y = 0
-            return self.limited_neg_y
-
-    def ramp_x(self, x):
-        if x > 0:
-            change_x = x - self.limited_pos_x
-            if change_x > self.limit_x:
-                change_x = self.limit_x
-            elif change_x < -self.limit_x:
-                change_x = -self.limit_x
-            self.limited_pos_x += change_x
-            self.limited_neg_x = 0
-            return self.limited_pos_x
-        else:
-            change_x = x - self.limited_neg_x
-            if change_x > self.limit_x:
-                change_x = self.limit_x
-            elif change_x < -self.limit_x:
-                change_x = -self.limit_x
-            self.limited_neg_x += change_x
-            self.limited_pos_x = 0
-            return self.limited_neg_x
