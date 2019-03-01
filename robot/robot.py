@@ -55,6 +55,7 @@ class Kevin(magicbot.MagicRobot):
 
         self.vision = NetworkTables.getTable("Vision")
         self.cargo_yaw = self.vision.getEntry("cargoYaw")
+        self.tape_yaw = self.vision.getEntry("tapeYaw")
 
         # Drive motors
         # Curisoity has talons, we can use it for testing
@@ -127,6 +128,7 @@ class Kevin(magicbot.MagicRobot):
         self.intake_piston = wpilib.DoubleSolenoid(4, 5)
 
         # Pneumatics
+        self.compressor = wpilib.Compressor()
         self.octacanum_shifter_front = wpilib.DoubleSolenoid(0, 1)
         self.octacanum_shifter_rear = wpilib.DoubleSolenoid(2, 3)
         # Default state is extended (mecanum)
