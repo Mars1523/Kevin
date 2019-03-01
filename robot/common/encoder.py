@@ -52,6 +52,27 @@ class BaseEncoder(wpilib.interfaces.PIDSource, wpilib.sendablebase.SendableBase)
         builder.addDoubleProperty("Distance", self.get_position, None)
 
 
+class CANTalonEncoder(BaseEncoder):
+    """
+        This class deals with the zeroing and reading
+        from the encoders connected to motor controllers
+    """
+
+    def __init__(self, motor, reversed=False):
+        self.motor = motor
+        if reversed:
+            self.mod = 1
+        else:
+            self.mod = -1
+        self.initialValue = self.mod * self.motor.getQuadraturePosition()
+
+    def get_position(self) -> int:
+        return (self.mod * self.motor.getQuadraturePosition()) - self.initialValue
+
+    def zero(self):
+        self.initialValue = self.mod * self.motor.getQuadraturePosition()
+
+
 class CANTalonQuadEncoder(BaseEncoder):
     """
         Access quadrature encoders connected to CTRE Talons
