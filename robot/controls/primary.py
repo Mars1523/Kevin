@@ -92,10 +92,13 @@ class Primary(marsutils.ControlInterface):
             )
 
         self.intake.set_speed(-self.gamepad2.getY(GenericHID.Hand.kLeft))
-        self.intake.set_wrist(
-            RobotDriveBase.applyDeadband(
-                self.gamepad2.getY(GenericHID.Hand.kRight), 0.01
-            )
+
+        wrist_setpoint_adj = RobotDriveBase.applyDeadband(
+            self.gamepad2.getY(GenericHID.Hand.kRight) * 0.5, 0.15
+        )
+
+        self.intake.set_wrist_setpoint(
+            self.intake.pid_controller.getSetpoint() + (wrist_setpoint_adj * 7)
         )
 
         if self.gamepad2.getXButton():

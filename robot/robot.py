@@ -11,6 +11,7 @@ from networktables import NetworkTables
 from components import Drive, Lift, Intake
 from controllers import AlignCargo
 from common.encoder import SparkMaxEncoder, CANTalonQuadEncoder, ExternalEncoder
+from common.srx_mag_encoder import AbsoluteMagneticEncoder
 from controls import Primary
 
 from wpilib.interfaces.generichid import GenericHID
@@ -116,6 +117,8 @@ class Kevin(magicbot.MagicRobot):
         # Intake
         self.wrist_motor = ctre.WPI_TalonSRX(10)
         self.intake_motor = ctre.WPI_TalonSRX(11)
+        # NOTE: Practice Bot
+        self.wrist_encoder = AbsoluteMagneticEncoder(2)
 
         # Intake pistons
         self.intake_piston = wpilib.DoubleSolenoid(4, 5)
@@ -145,6 +148,10 @@ class Kevin(magicbot.MagicRobot):
         encoders_list.add(title="Rear Left", value=self.rl_drive_encoder)
         encoders_list.add(title="Rear Right", value=self.rr_drive_encoder)
         self.debug_tab.add(title="Lift Encoder", value=self.lift_encoder)
+
+        self.wrist_pos_dashboard = self.debug_tab.add(
+            value=0, title="Wrist Pos"
+        ).getEntry()
 
         # Launch camera server
         # Disabled: Vision sent through Jetson/Pi

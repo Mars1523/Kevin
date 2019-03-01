@@ -3,5 +3,6 @@ wpilib
 robotpy-rev
 robotpy-ctre
 robotpy-navx
+pynetworktables
 
 marsutils ~= 0.4
