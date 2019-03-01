@@ -127,6 +127,9 @@ class Kevin(magicbot.MagicRobot):
         # Intake pistons
         self.intake_piston = wpilib.DoubleSolenoid(4, 5)
 
+        # Intake grabber pistons
+        self.intake_grabber_piston = wpilib.DoubleSolenoid(6, 7)
+
         # Pneumatics
         self.compressor = wpilib.Compressor()
         self.octacanum_shifter_front = wpilib.DoubleSolenoid(0, 1)

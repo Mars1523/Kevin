@@ -130,6 +130,9 @@ class Primary(marsutils.ControlInterface):
         else:
             self.intake.retract_piston()
 
+        if self.gamepad2.getYButtonPressed():
+            self.intake.toggle_grab()
+
         if self.gamepad.getBackButton():
             self.compressor.stop()
 
