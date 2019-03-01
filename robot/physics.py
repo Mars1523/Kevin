@@ -41,7 +41,7 @@ class PhysicsEngine:
                         time that this function was called
         """
 
-        is_tank = hal_data["solenoid"][1]["value"]
+        is_tank = not hal_data["solenoid"][1]["value"]
 
         # Simulate the drivetrain
         # right motors must be inverted
