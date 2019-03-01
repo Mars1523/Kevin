@@ -1,4 +1,3 @@
-import ctre
 from ctre.basemotorcontroller import BaseMotorController
 import wpilib
 from common.encoder import BaseEncoder
@@ -23,7 +22,8 @@ class Lift:
         )
         self.pid_controller.setAbsoluteTolerance(0.5)
         self.pid_controller.setContinuous(False)
-        self.pid_controller.setOutputRange(-0.35, 0.85)
+        self.pid_controller.setOutputRange(-0.35, 0.9)
+        self.pid_controller.setSetpoint(0)
         self.pid_controller.enable()
 
     def set_speed(self, speed):
