@@ -2,6 +2,7 @@ import ctre
 import wpilib
 from common.srx_mag_encoder import AbsoluteMagneticEncoder
 import networktables.entry
+from components import Lift
 
 
 class Intake:
@@ -77,7 +78,7 @@ class Intake:
         )
 
         self.intake_piston.set(
-            wpilib.DoubleSolenoid.Value.kForward
+            wpilib.DoubleSolenoid.Value.kReverse
             if self.extend
-            else wpilib.DoubleSolenoid.Value.kReverse
+            else wpilib.DoubleSolenoid.Value.kForward
         )
