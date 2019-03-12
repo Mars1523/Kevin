@@ -19,7 +19,6 @@ class Primary(marsutils.ControlInterface):
 
     gamepad: wpilib.XboxController
     gamepad2: wpilib.XboxController
-
     navx: navx.AHRS
 
     drive: Drive
@@ -42,7 +41,7 @@ class Primary(marsutils.ControlInterface):
         wpilib.shuffleboard.Shuffleboard.update()
         self.slow = self.gamepad.getAButton()
 
-        if self.gamepad.getRawButtonPressed(6):  # TODO: Change id
+        if self.gamepad.getBumperPressed(GenericHID.Hand.kRight):  # TODO: Change id
             self.drive_mode = self.drive_mode.toggle()
 
         auto = self.gamepad.getBButton()
@@ -50,39 +49,21 @@ class Primary(marsutils.ControlInterface):
 
         if not auto:
             if self.drive_mode == DriveMode.MECANUM:
-                forward_speed = self.gamepad.getTriggerAxis(GenericHID.Hand.kRight)
-                reverse_speed = -self.gamepad.getTriggerAxis(GenericHID.Hand.kLeft)
-                total_speed = (
-                    forward_speed
-                    + reverse_speed
-                    + -self.gamepad.getY(GenericHID.Hand.kRight)
-                )
+                forward_speed = -self.gamepad.getY(GenericHID.Hand.kRight)
 
                 if self.slow:
-                    total_speed *= 0.75
+                    forward_speed *= 0.75
                 else:
                     # total_speed *= 0.9
                     pass
 
-                if self.gamepad.getYButton():
-                    pov = self.gamepad.getPOV()
-                    if pov == 0:  # Forward
-                        self.angle = 0
-                    elif pov == 90:  # Right
-                        self.angle = 270
-                    elif pov == 180:  # Back
-                        self.angle = 180
-                    elif pov == 270:  # Left
-                        self.angle = 90
-
-                strafe_mult = 0.65 if self.slow else 1
-                turn_mult = 0.65 if self.slow else 0.75
+                strafe_mult = 0.75 if self.slow else 1
+                turn_mult = 0.65 if self.slow else 0.85
 
                 self.drive.drive_mecanum(
                     self.gamepad.getX(GenericHID.Hand.kRight) * strafe_mult,
-                    total_speed,
+                    forward_speed,
                     self.gamepad.getX(GenericHID.Hand.kLeft) * turn_mult,
-                    angle=self.angle,
                 )
             else:
                 if self.slow:
@@ -131,8 +112,11 @@ class Primary(marsutils.ControlInterface):
         else:
             self.intake.retract_piston()
 
-        if self.gamepad2.getYButtonPressed():
+        if self.gamepad.getBumperPressed(GenericHID.Hand.kLeft):
             self.intake.toggle_grab()
+
+        if self.gamepad.getYButton():
+            self.drive.zero_fod()
 
         if self.gamepad.getBackButton():
             self.compressor.stop()

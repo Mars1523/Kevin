@@ -54,13 +54,12 @@ class Drive:
 
         self.adjusted = True
 
-    def drive_mecanum(self, y, x, z, adjusted=True, angle=0):
+    def drive_mecanum(self, y, x, z, adjusted=True):
         self.rotation = z
         self.y = y
         self.x = x
 
         self.adjusted = adjusted
-        self.mecanum_angle_adjustment = angle
 
         self.drive_mode = DriveMode.MECANUM
 
@@ -74,6 +73,12 @@ class Drive:
 
     def set_mode(self, mode: DriveMode):
         self.drive_mode = mode
+
+    def zero_fod(self):
+        """
+        "Zero" the field oriented drive
+        """
+        self.navx.zeroYaw()
 
     def execute(self):
         if self.adjusted:
@@ -94,9 +99,7 @@ class Drive:
         elif self.drive_mode == DriveMode.MECANUM:
             self.octacanum_shifter_front.set(wpilib.DoubleSolenoid.Value.kReverse)
             self.octacanum_shifter_rear.set(wpilib.DoubleSolenoid.Value.kReverse)
-            self.mecanum_drive.driveCartesian(
-                y, x, rot, gyroAngle=self.mecanum_angle_adjustment
-            )
+            self.mecanum_drive.driveCartesian(y, x, rot)
             self.tank_drive.feed()
 
         self.x = 0
