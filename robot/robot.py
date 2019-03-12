@@ -90,10 +90,10 @@ class Kevin(magicbot.MagicRobot):
             self.rl_drive_encoder = SparkMaxEncoder(self.rl_drive)
             self.rr_drive_encoder = SparkMaxEncoder(self.rr_drive)
 
-            self.fl_drive.setRampRate(0.2)
-            self.fr_drive.setRampRate(0.2)
-            self.rl_drive.setRampRate(0.2)
-            self.rr_drive.setRampRate(0.2)
+            self.fl_drive.setOpenLoopRampRate(0.2)
+            self.fr_drive.setOpenLoopRampRate(0.2)
+            self.rl_drive.setOpenLoopRampRate(0.2)
+            self.rr_drive.setOpenLoopRampRate(0.2)
         # left
         self.left_drive = wpilib.SpeedControllerGroup(self.fl_drive, self.rl_drive)
         # right
