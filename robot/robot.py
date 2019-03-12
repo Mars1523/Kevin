@@ -141,6 +141,15 @@ class Kevin(magicbot.MagicRobot):
         # Default state is extended (mecanum)
         self.octacanum_shifter_front.set(wpilib.DoubleSolenoid.Value.kForward)
         # self.octacanum_shifter_rear.set(wpilib.DoubleSolenoid.Value.kForward)
+
+        # Climbing
+        self.climb_piston = wpilib.DoubleSolenoid(2, 3)
+        self.climb_piston.set(wpilib.DoubleSolenoid.Value.kForward)
+
+        self.leg1 = rev.CANSparkMax(12, rev.MotorType.kBrushed)
+        self.leg2 = rev.CANSparkMax(13, rev.MotorType.kBrushed)
+
+        self.leg_drive = ctre.WPI_TalonSRX(17)
         # Misc components
 
         self.navx = navx.AHRS.create_spi()

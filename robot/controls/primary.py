@@ -1,6 +1,8 @@
 import marsutils.math
 import wpilib
+import rev
 import navx
+import ctre
 from wpilib.drive.robotdrivebase import RobotDriveBase
 
 from wpilib.interfaces.generichid import GenericHID
@@ -29,6 +31,13 @@ class Primary(marsutils.ControlInterface):
     tape_align_ctrl: AlignTape
 
     compressor: wpilib.Compressor
+
+    climb_piston: wpilib.DoubleSolenoid
+
+    leg1: rev.CANSparkMax
+    leg2: rev.CANSparkMax
+
+    leg_drive: ctre.WPI_TalonSRX
 
     def __init__(self):
         self.drive_mode = DriveMode.TANK
@@ -123,3 +132,23 @@ class Primary(marsutils.ControlInterface):
 
         if self.gamepad.getStartButton():
             self.compressor.start()
+
+        if self.gamepad.getXButton():
+            self.climb_piston.set(wpilib.DoubleSolenoid.Value.kReverse)
+        else:
+            self.climb_piston.set(wpilib.DoubleSolenoid.Value.kForward)
+
+        leg_speed = marsutils.math.signed_square(
+            (
+                self.gamepad.getTriggerAxis(GenericHID.Hand.kRight)
+                + -self.gamepad.getTriggerAxis(GenericHID.Hand.kLeft)
+            )
+        )
+
+        self.leg1.set(leg_speed)
+        self.leg2.set(leg_speed)
+
+        if self.gamepad.getXButton():
+            self.leg_drive.set(self.gamepad.getY(GenericHID.Hand.kRight))
+        else:
+            self.leg_drive.set(0)
