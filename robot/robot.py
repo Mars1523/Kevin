@@ -160,8 +160,9 @@ class Kevin(magicbot.MagicRobot):
         # self.pdp.clearStickyFaults()
         # self.debug_tab.add(title="PDP", value=self.pdp)
 
-        self.debug_tab.add(self.mecanum_drive)
-        self.debug_tab.add(self.tank_drive)
+        #  NOTE: Causes drive stutter
+        # self.debug_tab.add(self.mecanum_drive)
+        # self.debug_tab.add(self.tank_drive)
 
         encoders_list = self.debug_tab.getLayout("List", "Drive Encoders")
         encoders_list.add(title="Front Left", value=self.fl_drive_encoder)
