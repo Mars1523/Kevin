@@ -23,10 +23,10 @@ from components.drive import Drive, DriveMode
 #         self.output = output
 
 
-class AlignCargo:
+class AlignTape:
     drive: Drive
-    cargo_yaw: NetworkTableEntry
-    cargo_detected: NetworkTableEntry
+    tape_yaw: NetworkTableEntry
+    tape_detected: NetworkTableEntry
     debug_tab: ShuffleboardTab
 
     def setup(self):
@@ -34,8 +34,8 @@ class AlignCargo:
         # self.pid_source = PID(self.cargo_yaw)
         self.pid = wpilib.PIDController(
             # 0.045, 0.0002, 0.04, 0, self.pid_source, self.pid_source
-            0.045,
-            0.0002,
+            0.078,
+            0.005,
             0.04,
             0,
             self.get_yaw,
@@ -44,11 +44,12 @@ class AlignCargo:
         self.pid.setAbsoluteTolerance(5)
         self.pid.setContinuous(False)
         self.pid.setOutputRange(-0.7, 0.7)
-        self.pid.enable()
+        # self.pid.enable()
+        self.pid.setSetpoint(-4)
         self.output = 0
         self.on_target = False
 
-        self.debug_tab.add(title="Auto Driving PID", value=self.pid)
+        self.debug_tab.add(title="Auto Driving Tape PID", value=self.pid)
 
     def set_enabled(self, enabled):
         self.enabled = enabled
@@ -56,19 +57,20 @@ class AlignCargo:
         #     self.on_target = False
 
     def get_yaw(self):
-        return self.cargo_yaw.getNumber(0.0)
+        return self.tape_yaw.getNumber(0.0)
 
     def set_output(self, output):
         self.output = output
 
     def execute(self):
-        forward = 0.55 if self.on_target else 0
-        self.pid.setEnabled(self.enabled)
-        self.drive.set_mode(DriveMode.MECANUM)
-        # self.drive.drive_mecanum(-self.pid_source.output, forward, 0)
-        # yaw = abs(self.pid_source.yaw.getNumber(0))
-        self.drive.drive_mecanum(-self.output, forward, 0)
-        # yaw = abs(self.e.yaw.getNumber(0))
-        # print(self.pid_source.output, self.on_target, yaw)
-        self.on_target = self.cargo_detected.getBoolean(False)
-        print("charge" if self.on_target else "seek")
+        # forward = 0.55 if self.on_target else 0
+        self.pid.setEnabled(self.enabled and self.tape_detected.getBoolean(False))
+        if self.enabled:
+            self.drive.set_mode(DriveMode.MECANUM)
+            # self.drive.drive_mecanum(-self.pid_source.output, forward, 0)
+            # yaw = abs(self.pid_source.yaw.getNumber(0))
+            self.drive.drive_mecanum(-self.output, 0, 0)
+            # yaw = abs(self.e.yaw.getNumber(0))
+            # print(self.pid_source.output, self.on_target, yaw)
+            self.on_target = self.tape_detected.getBoolean(False)
+            print("charge" if self.on_target else "seek")

@@ -7,7 +7,7 @@ from wpilib.interfaces.generichid import GenericHID
 
 from components.drive import DriveMode, Drive
 from components import Lift, Intake
-from controllers import AlignCargo
+from controllers import AlignCargo, AlignTape
 
 
 class Primary(marsutils.ControlInterface):
@@ -26,7 +26,8 @@ class Primary(marsutils.ControlInterface):
     lift: Lift
     intake: Intake
 
-    cargo_align_ctrl: AlignCargo
+    # cargo_align_ctrl: AlignCargo
+    tape_align_ctrl: AlignTape
 
     compressor: wpilib.Compressor
 
@@ -45,7 +46,7 @@ class Primary(marsutils.ControlInterface):
             self.drive_mode = self.drive_mode.toggle()
 
         auto = self.gamepad.getBButton()
-        self.cargo_align_ctrl.set_enabled(auto)
+        self.tape_align_ctrl.set_enabled(auto)
 
         if not auto:
             if self.drive_mode == DriveMode.MECANUM:
