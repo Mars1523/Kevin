@@ -137,10 +137,10 @@ class Kevin(magicbot.MagicRobot):
         # Pneumatics
         self.compressor = wpilib.Compressor()
         self.octacanum_shifter_front = wpilib.DoubleSolenoid(0, 1)
-        self.octacanum_shifter_rear = wpilib.DoubleSolenoid(2, 3)
+        # self.octacanum_shifter_rear = wpilib.DoubleSolenoid(2, 3)
         # Default state is extended (mecanum)
         self.octacanum_shifter_front.set(wpilib.DoubleSolenoid.Value.kForward)
-        self.octacanum_shifter_rear.set(wpilib.DoubleSolenoid.Value.kForward)
+        # self.octacanum_shifter_rear.set(wpilib.DoubleSolenoid.Value.kForward)
         # Misc components
 
         self.navx = navx.AHRS.create_spi()

@@ -29,7 +29,7 @@ class Drive:
     mecanum_drive: wpilib.drive.MecanumDrive
 
     octacanum_shifter_front: wpilib.DoubleSolenoid
-    octacanum_shifter_rear: wpilib.DoubleSolenoid
+    # octacanum_shifter_rear: wpilib.DoubleSolenoid
 
     navx: navx.AHRS
 
@@ -92,13 +92,13 @@ class Drive:
         # feed the other drive train to appease the motor safety
         if self.drive_mode == DriveMode.TANK:
             self.octacanum_shifter_front.set(wpilib.DoubleSolenoid.Value.kForward)
-            self.octacanum_shifter_rear.set(wpilib.DoubleSolenoid.Value.kForward)
+            # self.octacanum_shifter_rear.set(wpilib.DoubleSolenoid.Value.kForward)
             # We cube the inputs above
             self.tank_drive.arcadeDrive(y, rot, squareInputs=False)
             self.mecanum_drive.feed()
         elif self.drive_mode == DriveMode.MECANUM:
             self.octacanum_shifter_front.set(wpilib.DoubleSolenoid.Value.kReverse)
-            self.octacanum_shifter_rear.set(wpilib.DoubleSolenoid.Value.kReverse)
+            # self.octacanum_shifter_rear.set(wpilib.DoubleSolenoid.Value.kReverse)
             self.mecanum_drive.driveCartesian(y, x, rot)
             self.tank_drive.feed()
 
