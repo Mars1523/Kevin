@@ -21,7 +21,7 @@ class Intake:
     # Front intake
     intake_grabber_piston: wpilib.DoubleSolenoid
     # Rear intake
-    intake_piston: wpilib.DoubleSolenoid
+    # intake_piston: wpilib.DoubleSolenoid
     wrist_encoder: AbsoluteMagneticEncoder
     wrist_pos_dashboard: networktables.entry.NetworkTableEntry
 
@@ -32,23 +32,26 @@ class Intake:
         self.grab = False
 
         self.pid_controller = wpilib.PIDController(
-            0.02555, 0.0, 0.0, self.wrist_encoder, self.wrist_motor
+            0.0256, 0.0, 0.0, self.wrist_encoder, self.wrist_motor
         )
         self.pid_controller.setAbsoluteTolerance(0.5)
         self.pid_controller.setContinuous(False)
-        self.pid_controller.setOutputRange(-0.65, 0.65)
-        self.pid_controller.setSetpoint(120)
+        self.pid_controller.setOutputRange(-1, 1)
+        self.pid_controller.setSetpoint(130)
         self.pid_controller.enable()
 
     def set_speed(self, speed):
         self.speed = speed
 
     def set_wrist_setpoint(self, setpoint):
-        clamped = max(120, min(197, setpoint))
+        clamped = max(130, min(205, setpoint))
         self.wrist_setpoint = clamped
 
     def set_wrist(self, speed):
         self.wrist_setpoint = speed
+
+    def set_defense(self):
+        self.wrist_setpoint = 112.5
 
     def extend_piston(self):
         self.extend = True
@@ -77,8 +80,8 @@ class Intake:
             else wpilib.DoubleSolenoid.Value.kReverse
         )
 
-        self.intake_piston.set(
-            wpilib.DoubleSolenoid.Value.kReverse
-            if self.extend
-            else wpilib.DoubleSolenoid.Value.kForward
-        )
+        # self.intake_piston.set(
+        #     wpilib.DoubleSolenoid.Value.kReverse
+        #     if self.extend
+        #     else wpilib.DoubleSolenoid.Value.kForward
+        # )

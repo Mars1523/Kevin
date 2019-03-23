@@ -10,6 +10,7 @@ from wpilib.interfaces.generichid import GenericHID
 from components.drive import DriveMode, Drive
 from components import Lift, Intake
 from controllers import AlignCargo, AlignTape
+from common import LEDManager
 
 
 class Primary(marsutils.ControlInterface):
@@ -39,6 +40,8 @@ class Primary(marsutils.ControlInterface):
 
     leg_drive: ctre.WPI_TalonSRX
 
+    led_manager: LEDManager
+
     def __init__(self):
         self.drive_mode = DriveMode.TANK
         self.slow = False
@@ -49,6 +52,7 @@ class Primary(marsutils.ControlInterface):
         # TODO: Fix for bug in wpilib
         wpilib.shuffleboard.Shuffleboard.update()
         self.slow = self.gamepad.getAButton()
+        # self.led_manager.set_fast(self.fast)
 
         if self.gamepad.getBumperPressed(GenericHID.Hand.kRight):  # TODO: Change id
             self.drive_mode = self.drive_mode.toggle()
@@ -62,12 +66,11 @@ class Primary(marsutils.ControlInterface):
 
                 if self.slow:
                     forward_speed *= 0.75
-                else:
-                    # total_speed *= 0.9
-                    pass
+                # else:
+                #     forward_speed *= 0.9
 
-                strafe_mult = 0.75 if self.slow else 1
-                turn_mult = 0.65 if self.slow else 0.85
+                strafe_mult = 0.76 if self.slow else 1
+                turn_mult = 0.65 if self.slow else 0.75
 
                 self.drive.drive_mecanum(
                     self.gamepad.getX(GenericHID.Hand.kRight) * strafe_mult,
@@ -88,7 +91,7 @@ class Primary(marsutils.ControlInterface):
 
         pov = self.gamepad2.getPOV()
         if pov == 180:  # Down (Minimum)
-            self.lift.set_setpoint(0)
+            self.lift.set_setpoint(200)
         elif pov == 270:  # Left
             self.lift.set_setpoint(464.5)
         elif pov == 0:  # Up
@@ -113,7 +116,7 @@ class Primary(marsutils.ControlInterface):
         )
 
         self.intake.set_wrist_setpoint(
-            self.intake.pid_controller.getSetpoint() + (wrist_setpoint_adj * 7)
+            self.intake.pid_controller.getSetpoint() + (wrist_setpoint_adj * 15)
         )
 
         if self.gamepad2.getXButton():
@@ -121,7 +124,9 @@ class Primary(marsutils.ControlInterface):
         else:
             self.intake.retract_piston()
 
-        if self.gamepad.getBumperPressed(GenericHID.Hand.kLeft):
+        if self.gamepad.getBumperPressed(
+            GenericHID.Hand.kLeft
+        ) or self.gamepad2.getBumperPressed(GenericHID.Hand.kLeft):
             self.intake.toggle_grab()
 
         if self.gamepad.getYButton():
@@ -137,6 +142,9 @@ class Primary(marsutils.ControlInterface):
             self.climb_piston.set(wpilib.DoubleSolenoid.Value.kReverse)
         else:
             self.climb_piston.set(wpilib.DoubleSolenoid.Value.kForward)
+
+        if self.gamepad2.getAButton():
+            self.intake.set_defense()
 
         leg_speed = marsutils.math.signed_square(
             (

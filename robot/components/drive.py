@@ -2,7 +2,9 @@ import wpilib
 import wpilib.drive
 from enum import Enum, auto
 import math
+import marsutils.math
 import navx
+from wpilib.drive import RobotDriveBase
 
 from common.encoder import BaseEncoder
 
@@ -29,7 +31,7 @@ class Drive:
     mecanum_drive: wpilib.drive.MecanumDrive
 
     octacanum_shifter_front: wpilib.DoubleSolenoid
-    # octacanum_shifter_rear: wpilib.DoubleSolenoid
+    octacanum_shifter_rear: wpilib.DoubleSolenoid
 
     navx: navx.AHRS
 
@@ -82,8 +84,11 @@ class Drive:
 
     def execute(self):
         if self.adjusted:
-            rot = math.pow(self.rotation, 3)
-            y = math.pow(self.y, 3)
+            # rot = math.pow(self.rotation, 3)
+            rot = marsutils.math.signed_square(self.rotation * 0.85)
+            # rot = RobotDriveBase.applyDeadband(self.rotation, 0.075)
+            # rot = mars
+            y = math.pow(self.y, 3) * 0.90
             x = math.pow(self.x, 3)
         else:
             rot = self.rotation
@@ -92,13 +97,13 @@ class Drive:
         # feed the other drive train to appease the motor safety
         if self.drive_mode == DriveMode.TANK:
             self.octacanum_shifter_front.set(wpilib.DoubleSolenoid.Value.kForward)
-            # self.octacanum_shifter_rear.set(wpilib.DoubleSolenoid.Value.kForward)
+            self.octacanum_shifter_rear.set(wpilib.DoubleSolenoid.Value.kForward)
             # We cube the inputs above
             self.tank_drive.arcadeDrive(y, rot, squareInputs=False)
             self.mecanum_drive.feed()
         elif self.drive_mode == DriveMode.MECANUM:
             self.octacanum_shifter_front.set(wpilib.DoubleSolenoid.Value.kReverse)
-            # self.octacanum_shifter_rear.set(wpilib.DoubleSolenoid.Value.kReverse)
+            self.octacanum_shifter_rear.set(wpilib.DoubleSolenoid.Value.kReverse)
             self.mecanum_drive.driveCartesian(y, x, rot)
             self.tank_drive.feed()
 

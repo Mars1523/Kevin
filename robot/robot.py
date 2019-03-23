@@ -12,6 +12,7 @@ from components import Drive, Lift, Intake
 from controllers import AlignCargo, AlignTape
 from common.encoder import SparkMaxEncoder, CANTalonQuadEncoder, ExternalEncoder
 from common.srx_mag_encoder import AbsoluteMagneticEncoder
+from common import LEDManager
 from controls import Primary
 
 from wpilib.interfaces.generichid import GenericHID
@@ -38,6 +39,9 @@ class Kevin(magicbot.MagicRobot):
 
     def createObjects(self):
         """Create magicbot components"""
+
+        # Use robot in sandstorm
+        self.use_teleop_in_autonomous = True
 
         # Inputs
         self.gamepad = wpilib.XboxController(0)
@@ -90,10 +94,11 @@ class Kevin(magicbot.MagicRobot):
             self.rl_drive_encoder = SparkMaxEncoder(self.rl_drive)
             self.rr_drive_encoder = SparkMaxEncoder(self.rr_drive)
 
-            self.fl_drive.setOpenLoopRampRate(0.2)
-            self.fr_drive.setOpenLoopRampRate(0.2)
-            self.rl_drive.setOpenLoopRampRate(0.2)
-            self.rr_drive.setOpenLoopRampRate(0.2)
+            self.fl_drive.setOpenLoopRampRate(0.35)
+            self.fr_drive.setOpenLoopRampRate(0.35)
+            self.rl_drive.setOpenLoopRampRate(0.35)
+            self.rr_drive.setOpenLoopRampRate(0.35)
+
         # left
         self.left_drive = wpilib.SpeedControllerGroup(self.fl_drive, self.rl_drive)
         # right
@@ -111,15 +116,20 @@ class Kevin(magicbot.MagicRobot):
 
         # Lift
         # TODO: IMPORTANT PRACTICE BOT vs COMP
+
+        # Practice
         self.lift_motor = ctre.WPI_VictorSPX(8)
         self.lift_follower = ctre.WPI_VictorSPX(9)
         self.lift_follower.set(ctre.ControlMode.Follower, 8)
         self.lift_encoder = ExternalEncoder(0, 1, reversed=True)
+
+        # Comp
         # self.lift_motor = ctre.WPI_TalonSRX(9)
         # self.lift_follower = ctre.WPI_TalonSRX(8)
-        self.lift_motor.setInverted(False)
-        self.lift_follower.setInverted(False)
         # self.lift_follower.set(ctre.ControlMode.Follower, 9)
+
+        # self.lift_motor.setInverted(True)
+        # self.lift_follower.setInverted(True)
         # self.lift_encoder = ExternalEncoder(0, 1, reversed=False)
 
         # Intake
@@ -129,21 +139,21 @@ class Kevin(magicbot.MagicRobot):
         self.wrist_encoder = AbsoluteMagneticEncoder(2)
 
         # Intake pistons
-        self.intake_piston = wpilib.DoubleSolenoid(4, 5)
+        # self.intake_piston = wpilib.DoubleSolenoid(4, 5)
 
         # Intake grabber pistons
-        self.intake_grabber_piston = wpilib.DoubleSolenoid(6, 7)
+        self.intake_grabber_piston = wpilib.DoubleSolenoid(4, 5)
 
         # Pneumatics
         self.compressor = wpilib.Compressor()
         self.octacanum_shifter_front = wpilib.DoubleSolenoid(0, 1)
-        # self.octacanum_shifter_rear = wpilib.DoubleSolenoid(2, 3)
+        self.octacanum_shifter_rear = wpilib.DoubleSolenoid(2, 3)
         # Default state is extended (mecanum)
         self.octacanum_shifter_front.set(wpilib.DoubleSolenoid.Value.kForward)
-        # self.octacanum_shifter_rear.set(wpilib.DoubleSolenoid.Value.kForward)
+        self.octacanum_shifter_rear.set(wpilib.DoubleSolenoid.Value.kForward)
 
         # Climbing
-        self.climb_piston = wpilib.DoubleSolenoid(2, 3)
+        self.climb_piston = wpilib.DoubleSolenoid(6, 7)
         self.climb_piston.set(wpilib.DoubleSolenoid.Value.kForward)
 
         self.leg1 = rev.CANSparkMax(12, rev.MotorType.kBrushed)
@@ -177,7 +187,13 @@ class Kevin(magicbot.MagicRobot):
 
         # Launch camera server
         # Disabled: Vision sent through Jetson/Pi
-        # wpilib.CameraServer.launch()
+        wpilib.CameraServer.launch()
+
+        # Connect to ardunio controlled leds
+        self.led_manager = LEDManager()
+
+        if self.isReal():
+            wpilib.Notifier(lambda: self.led_manager.alliance_fader()).startSingle(2)
 
     def setup(self):
         self.drive_tab.add(self._control_manager.control_chooser, title="Control_Mode")
@@ -202,6 +218,7 @@ class Kevin(magicbot.MagicRobot):
 
     def disabledInit(self):
         self.gamepad.setRumble(wpilib.interfaces.GenericHID.RumbleType.kRightRumble, 0)
+        self.led_manager.alliance_fader()
 
 
 if __name__ == "__main__":
