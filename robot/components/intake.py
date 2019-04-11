@@ -37,21 +37,22 @@ class Intake:
         self.pid_controller.setAbsoluteTolerance(0.5)
         self.pid_controller.setContinuous(False)
         self.pid_controller.setOutputRange(-1, 1)
-        self.pid_controller.setSetpoint(130)
+        self.pid_controller.setSetpoint(209)
+        # 136-215-220
         self.pid_controller.enable()
 
     def set_speed(self, speed):
         self.speed = speed
 
     def set_wrist_setpoint(self, setpoint):
-        clamped = max(130, min(205, setpoint))
+        clamped = max(136, min(215, setpoint))
         self.wrist_setpoint = clamped
 
     def set_wrist(self, speed):
         self.wrist_setpoint = speed
 
     def set_defense(self):
-        self.wrist_setpoint = 112.5
+        self.wrist_setpoint = 220
 
     def extend_piston(self):
         self.extend = True

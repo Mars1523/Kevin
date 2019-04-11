@@ -54,13 +54,15 @@ class Drive:
         # Mecanum only
         self.x = 0
 
+        self.fod = False
         self.adjusted = True
 
-    def drive_mecanum(self, y, x, z, adjusted=True):
+    def drive_mecanum(self, y, x, z, fod=False, adjusted=True):
         self.rotation = z
         self.y = y
         self.x = x
 
+        self.fod = fod
         self.adjusted = adjusted
 
         self.drive_mode = DriveMode.MECANUM
@@ -88,7 +90,7 @@ class Drive:
             rot = marsutils.math.signed_square(self.rotation * 0.85)
             # rot = RobotDriveBase.applyDeadband(self.rotation, 0.075)
             # rot = mars
-            y = math.pow(self.y, 3) * 0.90
+            y = math.pow(self.y, 3)
             x = math.pow(self.x, 3)
         else:
             rot = self.rotation
@@ -104,12 +106,18 @@ class Drive:
         elif self.drive_mode == DriveMode.MECANUM:
             self.octacanum_shifter_front.set(wpilib.DoubleSolenoid.Value.kReverse)
             self.octacanum_shifter_rear.set(wpilib.DoubleSolenoid.Value.kReverse)
-            self.mecanum_drive.driveCartesian(y, x, rot)
+            if self.fod:
+                self.mecanum_drive.driveCartesian(
+                    y, x, rot, gyroAngle=self.navx.getAngle()
+                )
+            else:
+                self.mecanum_drive.driveCartesian(y, x, rot)
             self.tank_drive.feed()
 
         self.x = 0
         self.y = 0
         self.rotation = 0
+        self.fod = False
 
     def reset_encoders(self):
         """ Reset all associated encoders
