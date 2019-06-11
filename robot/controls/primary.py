@@ -55,9 +55,12 @@ class Primary(marsutils.ControlInterface):
         super().__init__()
 
     def teleopPeriodic(self):
-        # TODO: Fix for bug in wpilib
+        # TODO: Fix for bug in wpilib (this shouldn't be needed anymore)
         wpilib.shuffleboard.Shuffleboard.update()
+
         self.slow = self.gamepad.getAButton()
+
+        # Toggle field-oriented-drive with the right stick button
         if self.gamepad.getStickButtonPressed(GenericHID.Hand.kRight):
             self.fod = not self.fod
 
@@ -76,9 +79,10 @@ class Primary(marsutils.ControlInterface):
 
         # self.led_manager.set_fast(self.fast)
 
-        if self.gamepad.getBumperPressed(GenericHID.Hand.kRight):  # TODO: Change id
+        if self.gamepad.getBumperPressed(GenericHID.Hand.kRight):
             self.drive_mode = self.drive_mode.toggle()
 
+        # enable auto target seeking
         auto = self.gamepad.getBButton()
         self.tape_align_ctrl.set_enabled(auto)
 
@@ -93,6 +97,7 @@ class Primary(marsutils.ControlInterface):
 
                 strafe_mult = 0.76 if self.slow else 1
                 # turn_mult = 0.65 if self.slow else 0.75
+                # Reduce the turn input even without slow mode because Kevin is *really fast*
                 turn_mult = 0.65 if self.slow else 0.75
 
                 self.drive.drive_mecanum(
@@ -114,7 +119,7 @@ class Primary(marsutils.ControlInterface):
                     )
 
         pov = self.gamepad2.getPOV()
-        if pov == 180:  # Down (Minimum)
+        if pov == 180:  # Down (lowest rocket hatch height)
             self.lift.set_setpoint(200)
         elif pov == 270:  # Left
             self.lift.set_setpoint(380.5)
@@ -128,6 +133,7 @@ class Primary(marsutils.ControlInterface):
         elif self.gamepad2.getXButton():
             self.lift.set_setpoint(420)
 
+        # manual adjustment of the setpoint with analog triggers
         setpoint = self.lift.get_setpoint()
         if self.gamepad2.getTriggerAxis(GenericHID.Hand.kRight) > 0.02:
             self.lift.set_setpoint(
@@ -177,9 +183,11 @@ class Primary(marsutils.ControlInterface):
             )
         )
 
+        # The "knee", moves the legs down
         self.leg1.set(leg_speed)
         self.leg2.set(leg_speed)
 
+        # The leg's wheels
         if self.gamepad.getXButton():
             # self.leg_drive.set(-self.gamepad.getY(GenericHID.Hand.kRight) * 50)
             self.leg_drive.set(-1)

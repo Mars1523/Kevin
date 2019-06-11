@@ -40,24 +40,19 @@ class Kevin(magicbot.MagicRobot):
     def createObjects(self):
         """Create magicbot components"""
 
-        # Use robot in sandstorm
+        # Allow player control in sandstorm (2019 specific)
         self.use_teleop_in_autonomous = True
 
         # Inputs
         self.gamepad = wpilib.XboxController(0)
         self.gamepad2 = wpilib.XboxController(1)
 
-        # Dashboard items
+        # Dashboard tabs
         self.prefs = Shuffleboard.getTab("Preferences")
         self.drive_tab = Shuffleboard.getTab("Drive")
         self.debug_tab = Shuffleboard.getTab("Debugging")
 
-        self.curiosity_compat = (
-            self.prefs.addPersistent("curiosity_compat", False)
-            .withWidget("Toggle Box")
-            .getEntry()
-        )
-
+        # pi/jetson vision data
         self.vision = NetworkTables.getTable("Vision")
         self.cargo_yaw = self.vision.getEntry("cargoYaw")
         self.tape_yaw = self.vision.getEntry("tapeYaw")
@@ -66,14 +61,8 @@ class Kevin(magicbot.MagicRobot):
         self.tape_mode = self.vision.getEntry("tape")
 
         # Drive motors
-        # Curisoity has talons, we can use it for testing
-        if self.curiosity_compat.get():
-            self.fl_drive = ctre.WPI_TalonSRX(10)
-            self.fr_drive = ctre.WPI_TalonSRX(11)
-            self.rl_drive = ctre.WPI_TalonSRX(12)
-            self.rr_drive = ctre.WPI_TalonSRX(13)
-        # TODO: Spark max does not have sim support yet, use talons instead for now
-        elif self.isSimulation():
+        # TODO: Spark max has some sim bugs, so use talons instead for now
+        if self.isSimulation():
             self.fl_drive = ctre.WPI_TalonSRX(2)
             self.fr_drive = ctre.WPI_TalonSRX(3)
             self.rl_drive = ctre.WPI_TalonSRX(4)
@@ -94,14 +83,14 @@ class Kevin(magicbot.MagicRobot):
             self.rl_drive_encoder = SparkMaxEncoder(self.rl_drive)
             self.rr_drive_encoder = SparkMaxEncoder(self.rr_drive)
 
+            # Make the drive a little less jumpy
             self.fl_drive.setOpenLoopRampRate(0.35)
             self.fr_drive.setOpenLoopRampRate(0.35)
             self.rl_drive.setOpenLoopRampRate(0.35)
             self.rr_drive.setOpenLoopRampRate(0.35)
 
-        # left
+        # Wheel groups for tank mode
         self.left_drive = wpilib.SpeedControllerGroup(self.fl_drive, self.rl_drive)
-        # right
         self.right_drive = wpilib.SpeedControllerGroup(self.fr_drive, self.rr_drive)
 
         # Drive trains
@@ -111,17 +100,11 @@ class Kevin(magicbot.MagicRobot):
         self.tank_drive = wpilib.drive.DifferentialDrive(
             self.left_drive, self.right_drive
         )
+        # They can't tell the other is in control, so we just turn off the software safety
         self.mecanum_drive.setSafetyEnabled(False)
         self.tank_drive.setSafetyEnabled(False)
 
         # Lift
-        # TODO: IMPORTANT PRACTICE BOT vs COMP
-
-        # Practice
-        # self.lift_motor = ctre.WPI_VictorSPX(8)
-        # self.lift_follower = ctre.WPI_VictorSPX(9)
-        # self.lift_follower.set(ctre.ControlMode.Follower, 8)
-        # self.lift_encoder = ExternalEncoder(0, 1, reversed=True)
 
         # Comp
         self.lift_motor = ctre.WPI_TalonSRX(9)
@@ -136,11 +119,8 @@ class Kevin(magicbot.MagicRobot):
         self.wrist_motor = ctre.WPI_TalonSRX(10)
         self.wrist_motor.setInverted(True)
         self.intake_motor = ctre.WPI_TalonSRX(11)
-        # NOTE: Practice Bot
+        # NOTE: Practice Bot (is this comment still relevant?)
         self.wrist_encoder = AbsoluteMagneticEncoder(2)
-
-        # Intake pistons
-        # self.intake_piston = wpilib.DoubleSolenoid(4, 5)
 
         # Intake grabber pistons
         self.intake_grabber_piston = wpilib.DoubleSolenoid(4, 5)
@@ -164,17 +144,17 @@ class Kevin(magicbot.MagicRobot):
 
         # self.leg_drive = ctre.WPI_TalonSRX(17)
         self.leg_drive = rev.CANSparkMax(17, rev.MotorType.kBrushed)
-        # Misc components
 
+        # Misc components
         self.navx = navx.AHRS.create_spi()
 
         # PDP for monitoring power usage
-        # NOTE: Causes drive stutter
+        # WARN: Causes drive to stutter
         # self.pdp = wpilib.PowerDistributionPanel(0)
         # self.pdp.clearStickyFaults()
         # self.debug_tab.add(title="PDP", value=self.pdp)
 
-        #  NOTE: Causes drive stutter
+        # WARN: Causes drive to stutter
         # self.debug_tab.add(self.mecanum_drive)
         # self.debug_tab.add(self.tank_drive)
 
@@ -206,6 +186,7 @@ class Kevin(magicbot.MagicRobot):
     def autonomous(self):
         """Prepare for autonomous mode"""
 
+        # This forwards input to teleopPerodic during the sandstorm
         magicbot.MagicRobot.autonomous(self)
 
     # Make the primary controller rumble briefly
@@ -221,6 +202,7 @@ class Kevin(magicbot.MagicRobot):
             wpilib.Notifier(stop).startSingle(0.75)
 
     def disabledInit(self):
+        # Make sure the controller isnt stuck rumbling
         self.gamepad.setRumble(wpilib.interfaces.GenericHID.RumbleType.kRightRumble, 0)
         self.led_manager.alliance_fader()
 

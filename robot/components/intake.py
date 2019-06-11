@@ -8,12 +8,11 @@ from components import Lift
 class Intake:
     """
         The intake uses `intake_motor` to spin wheels to pick up balls,
-        `wrist_motor` to move the frame down and out of the frame.
-        `wrist_motor` uses an absolute magnetic encoder to drive PID
+        `wrist_motor` to move the intake and uses an srx abs magnetic encoder
+        wired to the rio for PID
 
         The intake uses `intake_grabber_piston` to move two forks outward
-        to grab the hatch and uses `intake_piston` on the back of to robot to
-        detach hatches from velcro
+        to grab the hatch
     """
 
     intake_motor: ctre.WPI_TalonSRX
@@ -51,6 +50,7 @@ class Intake:
     def set_wrist(self, speed):
         self.wrist_setpoint = speed
 
+    # Pull the intake in tightly to avoid frame perimeter calls
     def set_defense(self):
         self.wrist_setpoint = 220
 
@@ -80,9 +80,3 @@ class Intake:
             if self.grab
             else wpilib.DoubleSolenoid.Value.kReverse
         )
-
-        # self.intake_piston.set(
-        #     wpilib.DoubleSolenoid.Value.kReverse
-        #     if self.extend
-        #     else wpilib.DoubleSolenoid.Value.kForward
-        # )

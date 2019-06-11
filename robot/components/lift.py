@@ -3,6 +3,7 @@ import wpilib
 from common.encoder import BaseEncoder
 
 
+# Any setpoint is capped at this value
 LIFT_ENCODER_MAX = 1980
 
 

@@ -4,7 +4,7 @@ from enum import Enum, auto
 import math
 import marsutils.math
 import navx
-from wpilib.drive import RobotDriveBase
+from magicbot import will_reset_to
 
 from common.encoder import BaseEncoder
 
@@ -42,20 +42,20 @@ class Drive:
 
     def __init__(self):
         # Current drive mode, this changes when a control calls its drive function
-        self.drive_mode = DriveMode.TANK
+        self.drive_mode = will_reset_to(DriveMode.TANK)
 
         # Rotation, negative turns to the left, also known as z
         # Used for both
-        self.rotation = 0
-        # Speed, positive is positive (joystick must be inverted)
+        self.rotation = will_reset_to(0)
+        # Speed, positive is forward (joystick must be inverted)
         # Used for both
-        self.y = 0
+        self.y = will_reset_to(0)
         # Horizontal speed
         # Mecanum only
-        self.x = 0
+        self.x = will_reset_to(0)
 
-        self.fod = False
-        self.adjusted = True
+        self.fod = will_reset_to(False)
+        self.adjusted = will_reset_to(True)
 
     def drive_mecanum(self, y, x, z, fod=False, adjusted=True):
         self.rotation = z
@@ -80,16 +80,16 @@ class Drive:
 
     def zero_fod(self):
         """
-        "Zero" the field oriented drive
+        Zero the field oriented drive,
+
+        makes the current facing direction "forward"
         """
         self.navx.zeroYaw()
 
     def execute(self):
         if self.adjusted:
-            # rot = math.pow(self.rotation, 3)
             rot = marsutils.math.signed_square(self.rotation * 0.85)
-            # rot = RobotDriveBase.applyDeadband(self.rotation, 0.075)
-            # rot = mars
+            # cube the inputs because the drive train is incredibly touchy even at small inputs
             y = math.pow(self.y, 3)
             x = math.pow(self.x, 3)
         else:
@@ -114,16 +114,10 @@ class Drive:
                 self.mecanum_drive.driveCartesian(y, x, rot)
             self.tank_drive.feed()
 
-        self.x = 0
-        self.y = 0
-        self.rotation = 0
-        self.fod = False
-
     def reset_encoders(self):
-        """ Reset all associated encoders
+        """ Reset all drive encoders
         """
-        pass
-        # self.front_left_enc.zero()
-        # self.front_right_enc.zero()
-        # self.rear_left_enc.zero()
-        # self.rear_right_enc.zero()
+        self.fl_drive_encoder.zero()
+        self.fr_drive_encoder.zero()
+        self.rl_drive_encoder.zero()
+        self.rr_drive_encoder.zero()

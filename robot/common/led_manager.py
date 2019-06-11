@@ -21,6 +21,7 @@ class LEDManager:
     last: LedPattern = LedPattern.Off
 
     def __init__(self, baud=9600, port=wpilib.SerialPort.Port.kUSB):
+        # Don't explode if there is nothing plugged in
         try:
             self.serial = wpilib.SerialPort(baud, port)
         except:
@@ -53,6 +54,7 @@ class LEDManager:
 
     def write_byte(self, byte: int):
         assert byte <= 255, "byte must be less than or equal to 255"
+        # Don't explode if there is nothing plugged in
         try:
             self.serial.write(bytes([byte]))
         except:
