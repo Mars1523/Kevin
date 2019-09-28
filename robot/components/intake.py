@@ -26,7 +26,7 @@ class Intake:
 
     def setup(self):
         self.speed = 0
-        self.wrist_setpoint = 0
+        self.wrist_setpoint = 273
         self.extend = False
         self.grab = False
 
@@ -44,8 +44,7 @@ class Intake:
         self.speed = speed
 
     def set_wrist_setpoint(self, setpoint):
-        clamped = max(273, min(208, setpoint))
-        #clamped = max(220, min(136, setpoint))
+        clamped = max(208, min(273, setpoint))
         self.wrist_setpoint = clamped
 
     def set_wrist(self, speed):
@@ -53,7 +52,7 @@ class Intake:
 
     # Pull the intake in tightly to avoid frame perimeter calls
     def set_defense(self):
-        self.wrist_setpoint = 205 # changed from 270
+        self.wrist_setpoint = 205  # changed from 270
 
     def extend_piston(self):
         self.extend = True
@@ -71,7 +70,7 @@ class Intake:
         self.grab = not self.grab
 
     def execute(self):
-        #self.wrist_pos_dashboard.setNumber(self.wrist_encoder.get_angle())
+        # self.wrist_pos_dashboard.setNumber(self.wrist_encoder.get_angle())
         self.wrist_pos_dashboard.setNumber(self.wrist_setpoint)
         self.intake_motor.set(ctre.ControlMode.PercentOutput, self.speed)
 
