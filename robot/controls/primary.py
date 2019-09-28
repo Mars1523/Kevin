@@ -88,7 +88,7 @@ class Primary(marsutils.ControlInterface):
 
         if not auto:
             if self.drive_mode == DriveMode.MECANUM:
-                forward_speed = -self.gamepad.getY(GenericHID.Hand.kLeft)
+                forward_speed = -self.gamepad.getY(GenericHID.Hand.kRight)
 
                 if self.slow:
                     forward_speed *= 0.75
@@ -101,21 +101,21 @@ class Primary(marsutils.ControlInterface):
                 turn_mult = 0.65 if self.slow else 0.75
 
                 self.drive.drive_mecanum(
-                    self.gamepad.getX(GenericHID.Hand.kLeft) * strafe_mult,
+                    self.gamepad.getX(GenericHID.Hand.kRight) * strafe_mult,
                     forward_speed,
-                    self.gamepad.getX(GenericHID.Hand.kRight) * turn_mult,
+                    self.gamepad.getX(GenericHID.Hand.kLeft) * turn_mult,
                     fod=self.fod,
                 )
             else:
                 if self.slow:
                     self.drive.drive_tank(
-                        -self.gamepad.getY(GenericHID.Hand.kLeft) * 0.75,
-                        self.gamepad.getX(GenericHID.Hand.kRight) * 0.75,
+                        -self.gamepad.getY(GenericHID.Hand.kRight) * 0.75,
+                        self.gamepad.getX(GenericHID.Hand.kLeft) * 0.75,
                     )
                 else:
                     self.drive.drive_tank(
-                        -self.gamepad.getY(GenericHID.Hand.kLeft),
-                        self.gamepad.getX(GenericHID.Hand.kRight),
+                        -self.gamepad.getY(GenericHID.Hand.kRight),
+                        self.gamepad.getX(GenericHID.Hand.kLeft),
                     )
 
         pov = self.gamepad2.getPOV()
