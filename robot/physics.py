@@ -14,6 +14,7 @@ class PhysicsEngine:
         """
 
         self.fl_encoder = self.fr_encoder = self.rl_encoder = self.rr_encoder = 0
+        self.wrist_encoder = 0
         self.physics_controller = physics_controller
 
         """
@@ -80,4 +81,7 @@ class PhysicsEngine:
             hal_data["CAN"][8]["value"], tm_diff
         )
 
-        hal_data["encoder"][0]["distance_per_pulse"] = 1
+        # Simulate the wrist encoders
+        self.wrist_encoder += hal_data["CAN"][10]["value"] * tm_diff * 1000
+        hal_data["encoder"][1]["count"] = self.wrist_encoder
+        hal_data["encoder"][1]["distance_per_pulse"] = 1
