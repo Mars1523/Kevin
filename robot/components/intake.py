@@ -36,7 +36,7 @@ class Intake:
         self.pid_controller.setAbsoluteTolerance(0.5)
         self.pid_controller.setContinuous(False)
         self.pid_controller.setOutputRange(-1, 1)
-        self.pid_controller.setSetpoint(209)
+        self.pid_controller.setSetpoint(self.wrist_setpoint)
         # 136-215-220 (changed) 281-208-270
         self.pid_controller.enable()
 
@@ -52,7 +52,7 @@ class Intake:
 
     # Pull the intake in tightly to avoid frame perimeter calls
     def set_defense(self):
-        self.wrist_setpoint = 205  # changed from 270
+        self.wrist_setpoint = 280
 
     def extend_piston(self):
         self.extend = True
