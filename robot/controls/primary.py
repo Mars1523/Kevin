@@ -58,10 +58,10 @@ class Primary(marsutils.ControlInterface):
         # TODO: Fix for bug in wpilib (this shouldn't be needed anymore)
         wpilib.shuffleboard.Shuffleboard.update()
 
-        self.slow = self.gamepad.getAButton()
+        self.slow = not self.gamepad.getAButton()
 
         # Toggle field-oriented-drive with the right stick button
-        if self.gamepad.getStickButtonPressed(GenericHID.Hand.kRight):
+        if self.gamepad.getStickButtonPressed(GenericHID.Hand.kLeft):
             self.fod = not self.fod
 
             if self.fod:
@@ -79,7 +79,7 @@ class Primary(marsutils.ControlInterface):
 
         # self.led_manager.set_fast(self.fast)
 
-        if self.gamepad.getBumperPressed(GenericHID.Hand.kRight):
+        if self.gamepad.getBumperPressed(GenericHID.Hand.kLeft):
             self.drive_mode = self.drive_mode.toggle()
 
         # enable auto target seeking
@@ -88,7 +88,7 @@ class Primary(marsutils.ControlInterface):
 
         if not auto:
             if self.drive_mode == DriveMode.MECANUM:
-                forward_speed = -self.gamepad.getY(GenericHID.Hand.kRight)
+                forward_speed = -self.gamepad.getY(GenericHID.Hand.kLeft)
 
                 if self.slow:
                     forward_speed *= 0.75
@@ -101,21 +101,21 @@ class Primary(marsutils.ControlInterface):
                 turn_mult = 0.65 if self.slow else 0.75
 
                 self.drive.drive_mecanum(
-                    self.gamepad.getX(GenericHID.Hand.kRight) * strafe_mult,
+                    self.gamepad.getX(GenericHID.Hand.kLeft) * strafe_mult,
                     forward_speed,
-                    self.gamepad.getX(GenericHID.Hand.kLeft) * turn_mult,
+                    self.gamepad.getX(GenericHID.Hand.kRight) * turn_mult,
                     fod=self.fod,
                 )
             else:
                 if self.slow:
                     self.drive.drive_tank(
-                        -self.gamepad.getY(GenericHID.Hand.kRight) * 0.75,
-                        self.gamepad.getX(GenericHID.Hand.kLeft) * 0.75,
+                        -self.gamepad.getY(GenericHID.Hand.kLeft) * 0.75,
+                        self.gamepad.getX(GenericHID.Hand.kRight) * 0.75,
                     )
                 else:
                     self.drive.drive_tank(
-                        -self.gamepad.getY(GenericHID.Hand.kRight),
-                        self.gamepad.getX(GenericHID.Hand.kLeft),
+                        -self.gamepad.getY(GenericHID.Hand.kLeft),
+                        self.gamepad.getX(GenericHID.Hand.kRight),
                     )
 
         pov = self.gamepad2.getPOV()
