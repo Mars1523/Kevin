@@ -58,7 +58,7 @@ class Primary(marsutils.ControlInterface):
         # TODO: Fix for bug in wpilib (this shouldn't be needed anymore)
         wpilib.shuffleboard.Shuffleboard.update()
 
-        self.slow = not self.gamepad.getAButton()
+        self.slow = self.gamepad.getAButton()
 
         # Toggle field-oriented-drive with the right stick button
         if self.gamepad.getStickButtonPressed(GenericHID.Hand.kLeft):
