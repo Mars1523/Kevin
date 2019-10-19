@@ -36,11 +36,11 @@ class Primary(marsutils.ControlInterface):
 
     climb_piston: wpilib.DoubleSolenoid
 
-    leg1: ctre.WPI_TalonSRX
-    leg2: ctre.WPI_TalonSRX
+    # leg1: ctre.WPI_TalonSRX
+    # leg2: ctre.WPI_TalonSRX
 
     leg_drive: rev.CANSparkMax
-    # leg1: rev.CANSparkMax
+    leg1: rev.CANSparkMax
     # leg2: rev.CANSparkMax
     #
     # leg_drive: ctre.WPI_TalonSRX
@@ -185,7 +185,7 @@ class Primary(marsutils.ControlInterface):
 
         # The "knee", moves the legs down
         self.leg1.set(leg_speed)
-        self.leg2.set(leg_speed)
+        # self.leg2.set(leg_speed)
 
         # The leg's wheels
         if self.gamepad.getXButton():
