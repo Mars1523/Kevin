@@ -137,10 +137,10 @@ class Kevin(magicbot.MagicRobot):
         self.climb_piston = wpilib.DoubleSolenoid(6, 7)
         self.climb_piston.set(wpilib.DoubleSolenoid.Value.kForward)
 
-        # self.leg1 = rev.CANSparkMax(12, rev.MotorType.kBrushed)
-        # self.leg2 = rev.CANSparkMax(13, rev.MotorType.kBrushed)
-        self.leg1 = ctre.WPI_TalonSRX(12)
-        self.leg2 = ctre.WPI_TalonSRX(13)
+        self.leg1 = rev.CANSparkMax(12, rev.MotorType.kBrushed)
+        self.leg2 = rev.CANSparkMax(13, rev.MotorType.kBrushed)
+        # self.leg1 = ctre.WPI_TalonSRX(12)
+        # self.leg2 = ctre.WPI_TalonSRX(13)
 
         # self.leg_drive = ctre.WPI_TalonSRX(17)
         self.leg_drive = rev.CANSparkMax(17, rev.MotorType.kBrushed)
