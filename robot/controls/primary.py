@@ -118,20 +118,21 @@ class Primary(marsutils.ControlInterface):
                         self.gamepad.getX(GenericHID.Hand.kRight),
                     )
 
-        pov = self.gamepad2.getPOV()
-        if pov == 180:  # Down (lowest rocket hatch height)
-            self.lift.set_setpoint(200)
-        elif pov == 270:  # Left
-            self.lift.set_setpoint(380.5)
-        elif pov == 0:  # Up
-            self.lift.set_setpoint(1180.5)
-        elif pov == 90:  # Right
-            self.lift.set_setpoint(2028)  # max
-
-        if self.gamepad2.getYButton():
-            self.lift.set_setpoint(575)
-        elif self.gamepad2.getXButton():
-            self.lift.set_setpoint(420)
+        # Presets are disabled because they are dangerous
+        # pov = self.gamepad2.getPOV()
+        # if pov == 180:  # Down (lowest rocket hatch height)
+        #     self.lift.set_setpoint(200)
+        # elif pov == 270:  # Left
+        #     self.lift.set_setpoint(380.5)
+        # elif pov == 0:  # Up
+        #     self.lift.set_setpoint(1180.5)
+        # elif pov == 90:  # Right
+        #     self.lift.set_setpoint(2028)  # max
+        #
+        # if self.gamepad2.getYButton():
+        #     self.lift.set_setpoint(575)
+        # elif self.gamepad2.getXButton():
+        #     self.lift.set_setpoint(420)
 
         # manual adjustment of the setpoint with analog triggers
         setpoint = self.lift.get_setpoint()
