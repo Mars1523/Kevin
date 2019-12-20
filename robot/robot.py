@@ -12,7 +12,7 @@ from components import Drive, Lift, Intake, Climb
 from controllers import AlignCargo, AlignTape
 from common.encoder import SparkMaxEncoder, CANTalonQuadEncoder, ExternalEncoder
 from common.srx_mag_encoder import AbsoluteMagneticEncoder
-from common import LEDManager
+from common import LEDManager, rumble
 from controls import Primary
 
 from wpilib.interfaces.generichid import GenericHID
@@ -192,19 +192,17 @@ class Kevin(magicbot.MagicRobot):
 
     # Make the primary controller rumble briefly
     def teleopInit(self):
-        self.gamepad.setRumble(wpilib.interfaces.GenericHID.RumbleType.kRightRumble, 1)
-
-        def stop():
-            self.gamepad.setRumble(
-                wpilib.interfaces.GenericHID.RumbleType.kRightRumble, 0
-            )
-
-        if self.isReal():
-            wpilib.Notifier(stop).startSingle(0.75)
+        rumble.rumble(
+            self.gamepad,
+            duration=0.75,
+            kind=wpilib.interfaces.GenericHID.RumbleType.kRightRumble,
+        )
 
     def disabledInit(self):
         # Make sure the controller isnt stuck rumbling
-        self.gamepad.setRumble(wpilib.interfaces.GenericHID.RumbleType.kRightRumble, 0)
+        rumble.stop_rumble(
+            self.gamepad, wpilib.interfaces.GenericHID.RumbleType.kRightRumble
+        )
         self.led_manager.alliance_fader()
 
 

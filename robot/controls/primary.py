@@ -9,7 +9,7 @@ from wpilib.interfaces.generichid import GenericHID
 from components.drive import DriveMode, Drive
 from components import Lift, Intake, Climb
 from controllers import AlignCargo, AlignTape
-from common import LEDManager
+from common import LEDManager, rumble
 
 
 class Primary(marsutils.ControlInterface):
@@ -54,17 +54,11 @@ class Primary(marsutils.ControlInterface):
             self.fod = not self.fod
 
             if self.fod:
-                self.gamepad.setRumble(
-                    wpilib.interfaces.GenericHID.RumbleType.kLeftRumble, 1
+                rumble.rumble(
+                    self.gamepad,
+                    duration=0.25,
+                    kind=wpilib.interfaces.GenericHID.RumbleType.kLeftRumble,
                 )
-
-                def stop():
-                    self.gamepad.setRumble(
-                        wpilib.interfaces.GenericHID.RumbleType.kLeftRumble, 0
-                    )
-
-                if wpilib.robotbase.RobotBase.isReal():
-                    wpilib.Notifier(stop).startSingle(0.25)
 
         # self.led_manager.set_fast(self.fast)
 
