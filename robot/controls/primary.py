@@ -1,15 +1,13 @@
 import marsutils.math
 import wpilib
-import rev
 import navx
-import ctre
 
 import wpilib.robotbase
 from wpilib.drive.robotdrivebase import RobotDriveBase
 from wpilib.interfaces.generichid import GenericHID
 
 from components.drive import DriveMode, Drive
-from components import Lift, Intake
+from components import Lift, Intake, Climb
 from controllers import AlignCargo, AlignTape
 from common import LEDManager
 
@@ -28,22 +26,12 @@ class Primary(marsutils.ControlInterface):
     drive: Drive
     lift: Lift
     intake: Intake
+    climb: Climb
 
     # cargo_align_ctrl: AlignCargo
     tape_align_ctrl: AlignTape
 
     compressor: wpilib.Compressor
-
-    climb_piston: wpilib.DoubleSolenoid
-
-    # leg1: ctre.WPI_TalonSRX
-    # leg2: ctre.WPI_TalonSRX
-
-    leg_drive: rev.CANSparkMax
-    leg1: rev.CANSparkMax
-    # leg2: rev.CANSparkMax
-    #
-    # leg_drive: ctre.WPI_TalonSRX
 
     led_manager: LEDManager
 
@@ -58,6 +46,7 @@ class Primary(marsutils.ControlInterface):
         # TODO: Fix for bug in wpilib (this shouldn't be needed anymore)
         wpilib.shuffleboard.Shuffleboard.update()
 
+        # Drive
         self.slow = self.gamepad.getAButton()
 
         # Toggle field-oriented-drive with the right stick button
@@ -118,6 +107,7 @@ class Primary(marsutils.ControlInterface):
                         self.gamepad.getX(GenericHID.Hand.kRight),
                     )
 
+        # Lift
         # Presets are disabled because they are dangerous
         # pov = self.gamepad2.getPOV()
         # if pov == 180:  # Down (lowest rocket hatch height)
@@ -145,6 +135,7 @@ class Primary(marsutils.ControlInterface):
                 setpoint - (self.gamepad2.getTriggerAxis(GenericHID.Hand.kLeft) * 85)
             )
 
+        # Intake
         self.intake.set_speed(-self.gamepad2.getY(GenericHID.Hand.kLeft))
 
         wrist_setpoint_adj = RobotDriveBase.applyDeadband(
@@ -160,6 +151,7 @@ class Primary(marsutils.ControlInterface):
         ) or self.gamepad2.getBumperPressed(GenericHID.Hand.kLeft):
             self.intake.toggle_grab()
 
+        # Misc
         if self.gamepad.getYButton():
             self.drive.zero_fod()
 
@@ -169,13 +161,15 @@ class Primary(marsutils.ControlInterface):
         if self.gamepad.getStartButton():
             self.compressor.start()
 
-        if self.gamepad.getXButton():
-            self.climb_piston.set(wpilib.DoubleSolenoid.Value.kReverse)
-        else:
-            self.climb_piston.set(wpilib.DoubleSolenoid.Value.kForward)
-
         if self.gamepad2.getAButton():
             self.intake.set_defense()
+
+        # Climb
+
+        if self.gamepad.getXButton():
+            self.climb.extend_piston()
+        else:
+            self.climb.retract_piston()
 
         leg_speed = -marsutils.math.signed_square(
             (
@@ -185,12 +179,10 @@ class Primary(marsutils.ControlInterface):
         )
 
         # The "knee", moves the legs down
-        self.leg1.set(leg_speed)
-        # self.leg2.set(leg_speed)
+        self.climb.set_knee_speed(leg_speed)
 
         # The leg's wheels
         if self.gamepad.getXButton():
-            # self.leg_drive.set(-self.gamepad.getY(GenericHID.Hand.kRight) * 50)
-            self.leg_drive.set(-1)
+            self.climb.set_drive_speed(-1)
         else:
-            self.leg_drive.set(0)
+            self.climb.set_drive_speed(0)

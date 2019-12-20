@@ -8,7 +8,7 @@ import navx
 from marsutils import with_ctrl_manager, with_setup
 from networktables import NetworkTables
 
-from components import Drive, Lift, Intake
+from components import Drive, Lift, Intake, Climb
 from controllers import AlignCargo, AlignTape
 from common.encoder import SparkMaxEncoder, CANTalonQuadEncoder, ExternalEncoder
 from common.srx_mag_encoder import AbsoluteMagneticEncoder
@@ -26,6 +26,7 @@ class Kevin(magicbot.MagicRobot):
     drive: Drive
     lift: Lift
     intake: Intake
+    climb: Climb
 
     # Control modes
     primary: Primary
