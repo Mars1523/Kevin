@@ -12,13 +12,18 @@ from controllers import AlignCargo, AlignTape
 from common import LEDManager, rumble
 
 
+## This class contains the code to drive kevin, and inherts `marsutils.ControlInterface`
+## so that it is detected by `@with_ctrl_manager` magic
 class Primary(marsutils.ControlInterface):
     """
         Primary control, uses 2 xbox gamepads
     """
 
+    ## This is the name that `@with_ctrl_manager` will display on the dashboard
+    ## it is prefixed with an underscore so it is ignored by magicbot
     _DISPLAY_NAME = "Primary"
 
+    ## See `components.drive.Drive` for an explanation of these variables
     gamepad: wpilib.XboxController
     gamepad2: wpilib.XboxController
     navx: navx.AHRS
@@ -35,6 +40,11 @@ class Primary(marsutils.ControlInterface):
 
     led_manager: LEDManager
 
+    ## Define the "state", or the data we want to track between ticks to the periodic
+    ## functions
+    ##
+    ## Components usually define this sort of thing in `setup()`, and this probably
+    ## should too.
     def __init__(self):
         self.drive_mode = DriveMode.TANK
         self.slow = False
@@ -42,18 +52,34 @@ class Primary(marsutils.ControlInterface):
         self.fod = False
         super().__init__()
 
+    ## This is one of the robot lifecycle functions, and is called repetedly (60hz)
+    ## while the robot is enabled in teleop mode
+    ## In this function, we gather inputs from controllers and use that data
+    ## to control the various components of the robot
     def teleopPeriodic(self):
         # TODO: Fix for bug in wpilib (this shouldn't be needed anymore)
         wpilib.shuffleboard.Shuffleboard.update()
 
+        ## The gamepad `.get[SomeButton]()` functions provide the
+        ## _current_ state of the button, as in "is it pressed right now or not?"
+        ## there are also `.get[SomeButton]Pressed()` functions which check if
+        ## the button has been pressed since the last time you checked.
+        ## This is useful for toggles because it's pretty hard to only press the
+        ## button for 1/60th of a second
+        ## https://robotpy.readthedocs.io/projects/wpilib/en/latest/wpilib/XboxController.html
+        ## In this case, wheteher or not we are slow should be decided by the
+        ## current state of the button.
         # Drive
         self.slow = self.gamepad.getAButton()
 
+        ## This is a toggle, so we use a ".get[SomeButton]Pressed()" function.
         # Toggle field-oriented-drive with the right stick button
         if self.gamepad.getStickButtonPressed(GenericHID.Hand.kLeft):
+            ## This inverts the value of `self.fod`
             self.fod = not self.fod
 
             if self.fod:
+                ## Provide some haptic feedback that the robot is now in FOD
                 rumble.rumble(
                     self.gamepad,
                     duration=0.25,
@@ -69,6 +95,7 @@ class Primary(marsutils.ControlInterface):
         auto = self.gamepad.getBButton()
         self.tape_align_ctrl.set_enabled(auto)
 
+        ## Only process human input if not auto controllers are trying to drive
         if not auto:
             if self.drive_mode == DriveMode.MECANUM:
                 forward_speed = -self.gamepad.getY(GenericHID.Hand.kLeft)
@@ -102,6 +129,10 @@ class Primary(marsutils.ControlInterface):
                     )
 
         # Lift
+        ## Gamepad pov buttons are reported in degrees, with zero at the top
+        ## and -1 when nothing is pressed.
+        ## These are the lift presets, which allow the driers to quickly
+        ## bring the lift to predefined heights useful in the game.
         # Presets are disabled because they are dangerous
         # pov = self.gamepad2.getPOV()
         # if pov == 180:  # Down (lowest rocket hatch height)
@@ -136,6 +167,8 @@ class Primary(marsutils.ControlInterface):
             self.gamepad2.getY(GenericHID.Hand.kRight) * 0.5, 0.15
         )
 
+        ## We want the stick to define how fast we change the setpoint, not set
+        ## it's position directly.
         self.intake.set_wrist_setpoint(
             self.intake.pid_controller.getSetpoint() - (wrist_setpoint_adj * 15)
         )
@@ -165,6 +198,9 @@ class Primary(marsutils.ControlInterface):
         else:
             self.climb.retract_piston()
 
+        ## Unlike the wrist, we just set the motors percent ouput to be equal to
+        ## how much the stick has been moved
+        ## (I didn't get enough time to PID this too...)
         leg_speed = -marsutils.math.signed_square(
             (
                 self.gamepad.getTriggerAxis(GenericHID.Hand.kRight)
@@ -177,6 +213,11 @@ class Primary(marsutils.ControlInterface):
 
         # The leg's wheels
         if self.gamepad.getXButton():
+            ## Controlling the robot drive train, legs, pistons, and wheel speeds
+            ## proved to require more fingers than our primary driver had,
+            ## so we just set the leg wheels to drive backward.  We don't need
+            ## to climb down,  if we need to do that we just floor it and hope for
+            ## the best.
             self.climb.set_drive_speed(-1)
         else:
             self.climb.set_drive_speed(0)
