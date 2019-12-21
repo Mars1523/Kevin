@@ -62,33 +62,21 @@ class Kevin(magicbot.MagicRobot):
         self.tape_mode = self.vision.getEntry("tape")
 
         # Drive motors
-        # TODO: Spark max has some sim bugs, so use talons instead for now
-        if self.isSimulation():
-            self.fl_drive = ctre.WPI_TalonSRX(2)
-            self.fr_drive = ctre.WPI_TalonSRX(3)
-            self.rl_drive = ctre.WPI_TalonSRX(4)
-            self.rr_drive = ctre.WPI_TalonSRX(5)
+        self.fl_drive = rev.CANSparkMax(2, rev.MotorType.kBrushless)
+        self.fr_drive = rev.CANSparkMax(3, rev.MotorType.kBrushless)
+        self.rl_drive = rev.CANSparkMax(4, rev.MotorType.kBrushless)
+        self.rr_drive = rev.CANSparkMax(5, rev.MotorType.kBrushless)
 
-            self.fl_drive_encoder = CANTalonQuadEncoder(self.fl_drive)
-            self.fr_drive_encoder = CANTalonQuadEncoder(self.fr_drive)
-            self.rl_drive_encoder = CANTalonQuadEncoder(self.rl_drive)
-            self.rr_drive_encoder = CANTalonQuadEncoder(self.rr_drive)
-        else:
-            self.fl_drive = rev.CANSparkMax(2, rev.MotorType.kBrushless)
-            self.fr_drive = rev.CANSparkMax(3, rev.MotorType.kBrushless)
-            self.rl_drive = rev.CANSparkMax(4, rev.MotorType.kBrushless)
-            self.rr_drive = rev.CANSparkMax(5, rev.MotorType.kBrushless)
+        self.fl_drive_encoder = SparkMaxEncoder(self.fl_drive)
+        self.fr_drive_encoder = SparkMaxEncoder(self.fr_drive)
+        self.rl_drive_encoder = SparkMaxEncoder(self.rl_drive)
+        self.rr_drive_encoder = SparkMaxEncoder(self.rr_drive)
 
-            self.fl_drive_encoder = SparkMaxEncoder(self.fl_drive)
-            self.fr_drive_encoder = SparkMaxEncoder(self.fr_drive)
-            self.rl_drive_encoder = SparkMaxEncoder(self.rl_drive)
-            self.rr_drive_encoder = SparkMaxEncoder(self.rr_drive)
-
-            # Make the drive a little less jumpy
-            self.fl_drive.setOpenLoopRampRate(0.35)
-            self.fr_drive.setOpenLoopRampRate(0.35)
-            self.rl_drive.setOpenLoopRampRate(0.35)
-            self.rr_drive.setOpenLoopRampRate(0.35)
+        # Make the drive a little less jumpy
+        self.fl_drive.setOpenLoopRampRate(0.35)
+        self.fr_drive.setOpenLoopRampRate(0.35)
+        self.rl_drive.setOpenLoopRampRate(0.35)
+        self.rr_drive.setOpenLoopRampRate(0.35)
 
         # Wheel groups for tank mode
         self.left_drive = wpilib.SpeedControllerGroup(self.fl_drive, self.rl_drive)

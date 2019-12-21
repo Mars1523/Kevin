@@ -46,10 +46,10 @@ class PhysicsEngine:
 
         # Simulate the drivetrain
         # right motors must be inverted
-        front_l = hal_data["CAN"][2]["value"]
-        front_r = -hal_data["CAN"][3]["value"]
-        rear_l = hal_data["CAN"][4]["value"]
-        rear_r = -hal_data["CAN"][5]["value"]
+        front_l = hal_data["CAN"]["sparkmax-2"]["value"]
+        front_r = -hal_data["CAN"]["sparkmax-3"]["value"]
+        rear_l = hal_data["CAN"]["sparkmax-4"]["value"]
+        rear_r = -hal_data["CAN"]["sparkmax-5"]["value"]
 
         # TODO: The encoder math is _completely_ wrong
         if is_tank:
@@ -71,10 +71,18 @@ class PhysicsEngine:
             self.fr_encoder += self.mecaum_drivetrain.rf_speed * tm_diff * 1000
             self.rl_encoder += self.mecaum_drivetrain.lr_speed * tm_diff * 1000
             self.rr_encoder += self.mecaum_drivetrain.rr_speed * tm_diff * 1000
-        hal_data["CAN"][2]["quad_position"] = int(self.fl_encoder * ENCODER_TICKS)
-        hal_data["CAN"][4]["quad_position"] = int(self.fr_encoder * ENCODER_TICKS)
-        hal_data["CAN"][3]["quad_position"] = int(self.rl_encoder * ENCODER_TICKS)
-        hal_data["CAN"][5]["quad_position"] = int(self.rr_encoder * ENCODER_TICKS)
+        hal_data["CAN"]["sparkmax-2"]["quad_position"] = int(
+            self.fl_encoder * ENCODER_TICKS
+        )
+        hal_data["CAN"]["sparkmax-4"]["quad_position"] = int(
+            self.fr_encoder * ENCODER_TICKS
+        )
+        hal_data["CAN"]["sparkmax-3"]["quad_position"] = int(
+            self.rl_encoder * ENCODER_TICKS
+        )
+        hal_data["CAN"]["sparkmax-5"]["quad_position"] = int(
+            self.rr_encoder * ENCODER_TICKS
+        )
 
         # Simulate the lift encoders
         hal_data["encoder"][0]["count"] = self.lift_motion.compute(
