@@ -9,6 +9,10 @@
 
 The robot code for MARS 1523 robot Kevin for the 2019 season
 
+A heavily commented version of this code can be found [here](https://github.com/Mars1523/Kevin/tree/doc).
+And is intended to provide insight into the code and to help learn how to build
+robot code.
+
 <br>
 
 > "Faster, swifter, stronger"
