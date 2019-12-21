@@ -9,6 +9,10 @@
 
 The robot code for MARS 1523 robot Kevin for the 2019 season
 
+This branch of the code contains a large amount of comments explaining various 
+details of the code, why certain things are written the way they are, and hopefully
+contains enough explanation to give a through understanding of a "real" robot.
+
 <br>
 
 > "Faster, swifter, stronger"
