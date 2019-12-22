@@ -34,10 +34,13 @@ from wpilib.interfaces.generichid import GenericHID
 ## all control code can be written there.
 ## Kevin however only has one control interface (`controls.primary`), so it's not particulary useful,
 ## but it is still kind of nice to move the control code to a seperate file.
+##
+## For more information about these decorators and marsutils, see the docs at
+## https://mars-utils.readthedocs.io/en/latest/
 @with_ctrl_manager
 ## The main class in a magicbot robot must inherit `magicbot.MagicRobot`.
 ## A magicbot robot consists of the main class and then "components" which can access
-## the variables defined in `createObjects(` and allows for sepration of code.
+## the variables defined in `createObjects()` and allows for sepration of code.
 ## https://robotpy.readthedocs.io/projects/utilities/en/latest/magicbot.html
 class Kevin(magicbot.MagicRobot):
     # Magic components
