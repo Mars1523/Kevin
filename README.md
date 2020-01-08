@@ -13,6 +13,14 @@ This branch of the code contains a large amount of comments explaining various
 details of the code, why certain things are written the way they are, and hopefully
 contains enough explanation to give a through understanding of a "real" robot.
 
+To get started, first check out [`robot/robot.py`](robot/robot.py), 
+this file is where each piece of the robot is set up.
+Then, check out [`robot/controls/primary.py`](robot/controls/primary.py), 
+this is the file that actually explains _what_ the robot should do. It takes the
+control inputs and makes the parts of the robot do things.
+Every other file just sets up parts and defines _how_ to do things.
+
+
 <br>
 
 > "Faster, swifter, stronger"
