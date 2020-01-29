@@ -1,8 +1,9 @@
-pyfrc
-wpilib
-robotpy-rev
-robotpy-ctre
-robotpy-navx
-pynetworktables
+pyfrc==2019.1.0
+wpilib==2019.2.3
+robotpy-rev==2019
+robotpy-ctre==2019
+robotpy-navx==2019
+pynetworktables==2019.0.2
+robotpy-wpilib-utilities==2019.0.9
 
 marsutils ~= 0.4
