@@ -13,6 +13,27 @@ A heavily commented version of this code can be found [here](https://github.com/
 And is intended to provide insight into the code and to help learn how to build
 robot code.
 
+
+## Controls
+|               | Driver 1                   | Driver 2                          |
+|---------------|----------------------------|-----------------------------------|
+| Left Stick    | Forward/Reverse            | Intake wheels                     |
+| Right Stick   | Turn                       | Wrist Position                    |
+| Up            |                            | Lift preset (1180)                |
+| Down          |                            | Lift preset Rocket L1 Hatch (200) |
+| Left          |                            | Lift preset (380)                 |
+| Right         |                            | Lift preset MAX (2028)            |
+| A             | Slow Mode                  | Intake Defense Mode               |
+| B             | Auto Tape Target (?)       |                                   |
+| X             | Toggle Climb Pistons       | Lift preset (575)                 |
+| Y             | Reset Field Oriented Drive | Lift preset (420)                 |
+| Left Trigger  | Climb Arm Down             | Lift Setpoint Decrease            |
+| Right Trigger | Climb Arm Up               | Lift Setpoint Increase            |
+| Left Bumper   | Toggle Mechanum            | Toggle Hatch Intake               |
+| Right Bumper  | ?                          |                                   |
+| Back Button   | Compressor Off             |                                   |
+| Start Button  | Compressor On              |                                   |
+
 <br>
 
 > "Faster, swifter, stronger"
